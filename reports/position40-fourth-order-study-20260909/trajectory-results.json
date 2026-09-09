@@ -1,0 +1,62 @@
+{
+  "scope": "Reference-only mathematics; no prediction of physical position/force performance and no deployment.",
+  "duration_ms": 5,
+  "distance_um": 41.6,
+  "fourth_order_degenerate_15_phase_snap_pattern": [
+    1,
+    -1,
+    -1,
+    1,
+    -1,
+    1,
+    1,
+    -1
+  ],
+  "nonzero_snap_segment_ticks": 5,
+  "ideal_fourth_order": {
+    "max_velocity_mm_s": 16.64,
+    "max_acceleration_mm_s2": 13312.0,
+    "max_jerk_mm_s3": 21299200.0,
+    "max_snap_mm_s4": 34078720000.0,
+    "terminal_va_j_zero": true,
+    "jerk_continuous": true,
+    "snap_continuous": false
+  },
+  "fourth_cubic_approximation_errors": {
+    "position_mm": 2.1666666666666665e-08,
+    "velocity_mm_s": 0.000533728248850854,
+    "acceleration_mm_s2": 44.373333333333335,
+    "jerk_mm_s3": 2129920.0
+  },
+  "fourth_cubic_acceleration_jump_mm_s2": 88.74666666958183,
+  "fourth_cubic_max_combined_ff_A": 1.1255799176901244,
+  "fourth_host_execution_errors": [
+    "interpolated position must be nonpositive for this compression runtime"
+  ],
+  "seventh_ideal_bounds": {
+    "position_mm": 0.04160000000000021,
+    "velocity_mm_s": 18.20000000000001,
+    "acceleration_mm_s2": 12501.945504920455,
+    "jerk_mm_s3": 17471999.999999974,
+    "snap_mm_s4": 55910399999.99999
+  },
+  "seventh_host_execution_errors": [
+    "interpolated position must be nonpositive for this compression runtime"
+  ],
+  "seventh_cubic_acceleration_jump_mm_s2": 64.33440000000002,
+  "same_reference_phase_current_budget_assumption": {
+    "baseline_abs_A": 0.2,
+    "reserve_A": 0.05,
+    "fourth_total_A": 1.3755799176901244,
+    "cap_A": 1.5
+  },
+  "claim_limit": "Kinematic budgets are feasible for this example. True C3 continuity is lost in the current cubic interface, but position interpolation error is separately quantified and tiny. No need to blame micrometre actual tracking errors on cubic position interpolation alone.",
+  "fourth_cubic_approximation_sampled_errors": {
+    "position_mm": 2.1666666676078972e-08,
+    "velocity_mm_s": 0.0005324800000394703,
+    "acceleration_mm_s2": 44.37333333530114,
+    "jerk_mm_s3": 2129920.0000313595
+  },
+  "fourth_cubic_approximation_sampled_scope": "21 equally spaced points per segment; velocity extremum is not on that grid.",
+  "fourth_cubic_approximation_error_scope": "Analytic continuous-interval absolute maxima from q-H=s*t^2*(t-h)^2/24 and its derivatives."
+}

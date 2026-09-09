@@ -1,0 +1,100 @@
+{
+  "date": "2026-09-09",
+  "scope": "offline research; zero new hardware runs/rows",
+  "existing_complete_runs": 10,
+  "existing_rows": 160000,
+  "repeatability": {
+    "count": 6,
+    "mean_waveform_rms_um": 1.7374021562631945,
+    "pooled_rms_difference_from_repeat_mean_um": 0.056967899863930874,
+    "worst_pointwise_span_um": 0.30000000000000426,
+    "quantization_step_um": 0.1,
+    "scope": "Observed fixed-profile repeatability, not future error-floor or ILC performance proof",
+    "leave_one_run_out_error_prediction_rms_um": 0.06836147983671706,
+    "leave_one_run_out_scope": "Predict saved error trace from the other five traces; no compensation applied, no claim of achievable positioning accuracy."
+  },
+  "kinematic_reference": {
+    "scope": "Reference-only mathematics; no prediction of physical position/force performance and no deployment.",
+    "duration_ms": 5,
+    "distance_um": 41.6,
+    "fourth_order_degenerate_15_phase_snap_pattern": [
+      1,
+      -1,
+      -1,
+      1,
+      -1,
+      1,
+      1,
+      -1
+    ],
+    "nonzero_snap_segment_ticks": 5,
+    "ideal_fourth_order": {
+      "max_velocity_mm_s": 16.64,
+      "max_acceleration_mm_s2": 13312.0,
+      "max_jerk_mm_s3": 21299200.0,
+      "max_snap_mm_s4": 34078720000.0,
+      "terminal_va_j_zero": true,
+      "jerk_continuous": true,
+      "snap_continuous": false
+    },
+    "fourth_cubic_approximation_errors": {
+      "position_mm": 2.1666666666666665e-08,
+      "velocity_mm_s": 0.000533728248850854,
+      "acceleration_mm_s2": 44.373333333333335,
+      "jerk_mm_s3": 2129920.0
+    },
+    "fourth_cubic_acceleration_jump_mm_s2": 88.74666666958183,
+    "fourth_cubic_max_combined_ff_A": 1.1255799176901244,
+    "fourth_host_execution_errors": [
+      "interpolated position must be nonpositive for this compression runtime"
+    ],
+    "seventh_ideal_bounds": {
+      "position_mm": 0.04160000000000021,
+      "velocity_mm_s": 18.20000000000001,
+      "acceleration_mm_s2": 12501.945504920455,
+      "jerk_mm_s3": 17471999.999999974,
+      "snap_mm_s4": 55910399999.99999
+    },
+    "seventh_host_execution_errors": [
+      "interpolated position must be nonpositive for this compression runtime"
+    ],
+    "seventh_cubic_acceleration_jump_mm_s2": 64.33440000000002,
+    "same_reference_phase_current_budget_assumption": {
+      "baseline_abs_A": 0.2,
+      "reserve_A": 0.05,
+      "fourth_total_A": 1.3755799176901244,
+      "cap_A": 1.5
+    },
+    "claim_limit": "Kinematic budgets are feasible for this example. True C3 continuity is lost in the current cubic interface, but position interpolation error is separately quantified and tiny. No need to blame micrometre actual tracking errors on cubic position interpolation alone.",
+    "fourth_cubic_approximation_sampled_errors": {
+      "position_mm": 2.1666666676078972e-08,
+      "velocity_mm_s": 0.0005324800000394703,
+      "acceleration_mm_s2": 44.37333333530114,
+      "jerk_mm_s3": 2129920.0000313595
+    },
+    "fourth_cubic_approximation_sampled_scope": "21 equally spaced points per segment; velocity extremum is not on that grid.",
+    "fourth_cubic_approximation_error_scope": "Analytic continuous-interval absolute maxima from q-H=s*t^2*(t-h)^2/24 and its derivatives."
+  },
+  "input_csv_sha256": {
+    "position40-asymmetric-20260909/trial-02/fast/run-01": "4354774492e780112b101b59390680c992bafab7bd60047ebf1bd1058cd4f2ec",
+    "position40-asymmetric-20260909/trial-03/fast/run-01": "f38b2fc3032b114cd3670513892fd9d70bab90fd132949a81c250480b88808bf",
+    "position40-asymmetric-20260909/trial-04/fast/run-01": "235120137860240a38491a466197df7caba89d82dcf714910d95ed86730bda92",
+    "position40-ff-timing-20260909/trial-02/fast/run-01": "8cb825a1852b9c59fc0c020264709fa51c226679b4c7bb128241a8a509334fdd",
+    "position40-ff-timing-20260909/trial-03/fast/run-01": "749a6abcc7950845b5a06b761864bfcbd9998968a30d078348ce46e5da7b5d5b",
+    "position40-ff-timing-20260909/trial-05/fast/run-01": "2b2d690ee0d435cddd6ae43c6bf7a4b3879d9a4f65eb95f8f8d8825cc6a18ef8",
+    "position40-ff-timing-20260909/trial-06/fast/run-01": "0a926c95cda1e03862df876c90a53b348353033849f066399e33c42f03648cd9",
+    "position40-ff-timing-20260909/trial-07/fast/run-01": "ae79faf1d8b8907271390079fee6a9b53050139ad0c6e27c50569a34b8896019",
+    "position40-ff-timing-20260909/trial-08/fast/run-01": "2d1b334161b2c9265763ced9e7686eed9a801f558166d5450c873236cee08e1a",
+    "position40-ff-timing-20260909/trial-09/fast/run-01": "32f64bc7ee820a9522c4c5f21c79ca9f316bd886ad7d504f938713ed09cf8a6f"
+  },
+  "repeat_run_ids": [
+    "dd9d1521-71b1-4cf4-9a08-976287e30176",
+    "39c93e52-b7a3-4c2e-98ad-95ab806ab1a9",
+    "78b41617-59f8-448a-a2de-eacd727f0777",
+    "946d0188-c871-4747-a1ca-d6ba072bcc77",
+    "282a7f3a-c920-48fa-85d3-47f00cf19fa9",
+    "7b0c3ec2-ec52-43a9-9c1c-16a36b3623b2"
+  ],
+  "position_sign": "compression positive; report endpoint error = x_compression - 41.6 um",
+  "recommendation": "Fixed-reference model/learning feedforward first; native fourth-order PTP as a separate same-duration candidate; neither has been hardware-validated in this study."
+}
