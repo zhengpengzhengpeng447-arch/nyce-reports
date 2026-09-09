@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>位置预补偿：五次实测，保留原参数</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7f5;color:#203b2f;font:16px/1.8 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:1150px;margin:auto;padding:46px 25px 72px}h1{font-size:clamp(30px,4vw,46px);line-height:1.3;letter-spacing:-.03em;margin:12px 0 20px}h2{font-size:25px;margin:0 0 15px;line-height:1.5}h3{font-size:18px;margin:22px 0 8px}p{margin:12px 0}.eyebrow{font-size:13px;letter-spacing:.12em;color:#4d7562}.lead{font-size:19px;max-width:900px;color:#455f51}.meta{color:#64796d;font-size:14px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0}.card,section{background:white;border:1px solid #dae3dd;border-radius:16px}.card{padding:20px 24px}.card strong{display:block;font-size:30px;line-height:1.5;color:#176b50}.card span{font-size:14px;color:#597064}section{padding:30px;margin-top:23px}.note{padding:15px 19px;background:#edf5f0;border-left:4px solid #5a977a;border-radius:4px}.warn{background:#fff6e9;border-left-color:#bd844c}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;margin:18px 0;font-size:14px}th{background:#eef3f0;text-align:left;white-space:nowrap}td,th{padding:12px 13px;border-bottom:1px solid #e1e8e3}td{white-space:nowrap}figure{margin:22px 0}img{max-width:100%;display:block;border:1px solid #e3e9e5;border-radius:9px}figcaption{font-size:13px;color:#61776a;margin-top:9px}a{color:#147b59;text-underline-offset:3px}code{font:13px/1.6 ui-monospace,monospace;overflow-wrap:anywhere}.downloads{display:flex;flex-wrap:wrap;gap:10px 20px}.small{font-size:14px;color:#5c7467}details{border-top:1px solid #e0e7e2;padding-top:15px;margin-top:20px}summary{cursor:pointer;font-weight:600}footer{margin-top:25px;font-size:13px;color:#61796b}@media(max-width:680px){main{padding:28px 16px}section{padding:21px}.cards{grid-template-columns:1fr}.card{padding:15px 20px}h2{font-size:22px}}
+</style></head><body><nav style="padding:14px 20px;background:#ecf5f3;border-bottom:1px solid #cbded9;font:15px system-ui"><a href="../../" style="color:#126657;text-decoration:none">← NYCE 实验报告目录</a></nav><main><header><div class="eyebrow">NYCE · 位置预补偿实测 · 2026.09.09</div>
+<h1>多走一点、少走一点，<br>这次没有消掉到位后的回摆</h1>
+<p class="lead">完成 A–P–A–M–A 五次实际对照。中段少压对前段跟随略有帮助，但尾段 RMS 只改善约 0.29%，回摆仍约 5.4 µm；本轮保留原基准 A，没有把候选升级为推荐参数。</p>
+<p class="meta">5 → 20 N · 41.6 µm / 5 ms · 40 拍 × 125 µs · 原有位置闭环与前馈 · 全五次快测 COMPLETE</p></header>
+<div class="cards"><div class="card"><span>实际快测与原始数据</span><strong>5 次 / 80,000 行</strong><span>6 次服务请求中另有 1 次零行拒绝</span></div>
+<div class="card"><span>少压方案的尾段 RMS 改善</span><strong>0.29%</strong><span>相对前后 A 的标量 RMS 均值</span></div>
+<div class="card"><span>本轮保留</span><strong>原基准 A</strong><span>同一种修正未达到 5% 筛选要求</span></div></div>
+
+<section><h2>这次具体改了什么</h2>
+<p>按“已知误差就提前多走或少走”的思路，在 <strong>2–4 ms</strong> 加一个平滑的位置修正，中心为 <strong>3 ms</strong>。P 在中段少压 0.5 µm，M 在中段多压 0.5 µm；速度表同步按位置曲线的导数修改。修正起止处的位置、速度、加速度都回到零，最终仍走 41.6 µm、用时 5 ms。</p>
+<figure><img src="%E4%BD%8D%E7%BD%AE%E4%BF%AE%E6%AD%A3%E6%B3%A2%E5%BD%A2.png" alt="正负位置修正和同步速度修正"><figcaption>图中采用原始轴方向，正修正代表少压。修正为三次 B 样条，位置、速度、加速度连续；它不是四阶 S 轨迹。</figcaption></figure>
+<p>保持原有全局前馈系数、3 ms 中心的 +20 mA 附加 FF 表、300 ms 保持和 50 ms 返回。P/V 变化会同时改变原生加速度、负载与速度前馈的波形，所以测试反映的是整套位置控制的响应。</p>
+<p class="small">小位移修正也会带来较大的瞬时加速度变化。本次 ±0.5 µm 修正对应速度变化峰值 1 mm/s、加速度变化峰值 6,000 mm/s²；中心组合前馈变化约 ∓202.89 mA。完整参考的全局峰值仍为 v=15.1273 mm/s、a=13,446.46 mm/s²、j=35.8572×10⁶ mm/s³、组合 FF=1.12398 A，三方案均通过主机与原生模型校验。</p>
+</section>
+
+<section><h2>位置结果：微小变化没有形成可靠改善</h2>
+<div class="table-wrap"><table><thead><tr><th>实际顺序</th><th>5–25 ms RMS · µm</th><th>过冲 · µm</th><th>回摆 · µm</th><th>5 ms 误差 · µm</th><th>5 ms 附近拟合速度 · mm/s</th></tr></thead><tbody><tr><td>A1 基准</td><td>1.7466</td><td>1.4</td><td>5.4</td><td>+1.4</td><td>-0.253</td></tr><tr><td>P 中段少压 0.5 µm</td><td>1.7388</td><td>1.4</td><td>5.4</td><td>+1.4</td><td>-0.187</td></tr><tr><td>A2 基准</td><td>1.7412</td><td>1.6</td><td>5.4</td><td>+1.6</td><td>-0.440</td></tr><tr><td>M 中段多压 0.5 µm</td><td>1.7525</td><td>1.8</td><td>5.5</td><td>+1.7</td><td>-0.733</td></tr><tr><td>A3 基准</td><td>1.7171</td><td>1.7</td><td>5.4</td><td>+1.7</td><td>-0.480</td></tr></tbody></table></div>
+<p class="small">误差 = 实际压入量 − 41.6 µm，正值表示多压。过冲取 0–25 ms 正误差峰值；回摆取 5–25 ms 负误差幅值，不是峰峰值。RMS 使用 [5,25] ms 共 161 个原始位置样本。速度为 4.5–5.5 ms 九点位置拟合，负值表示正在退出压入方向，不代表精确瞬时速度。</p>
+<figure><img src="%E5%AE%9E%E9%99%85%E4%BD%8D%E7%BD%AE%E4%B8%8E%E5%9B%9E%E6%91%86.png" alt="五次实际位置、终点误差和误差RMS对比"><figcaption>位置曲线采用原始同钟记录。基准与两个候选的到位后波形接近；少压方案没有把约 5.4 µm 回摆拉回去。</figcaption></figure>
+<p><strong>P 少压：</strong>相邻 A 的 RMS 平均为 1.743905 µm，P 为 1.738779 µm，仅改善 0.2939%。0–5 ms 原生跟随误差 RMS 从相邻 A 平均 4.2003 降到 4.1020 µm（约 2.34%）。这是对各自参考轨迹的跟随指标，不能替代最终机械误差。</p>
+<p><strong>M 多压：</strong>尾段 RMS 相对相邻 A 均值变差 1.3493%，过冲达到 1.8 µm，5 ms 附近回撤速度幅值也更大。更多压入没有带来更稳定的到位。</p>
+<p class="note">三次 A 本身的 RMS 范围为 1.717086–1.746567 µm，跨度 0.029481 µm；P 相对相邻基准的收益只有约 0.0051 µm。当前证据不足以把 P 称作稳定更优版本。</p>
+</section>
+
+<section><h2>为什么没有继续把修正加大</h2>
+<p>五次结束后，先用相邻 A 扣除基准变化，再由正负修正估计这个单一波形的局部响应。只在预定的 ±0.75 µm 范围内做离线计算，没有执行新候选。</p>
+<p>这个局部线性模型给出的最好结果在“中段少压 0.75 µm”：预计尾段 RMS 从 1.733373 降到 1.714348 µm，约 <strong>1.10%</strong>，仍未达到事先约定的 5% 筛选要求。模型只来自一对正负试验，尚未独立验证，不能把这 1.10% 当作已经测到的提升。因此没有追加 C–A–C。</p>
+<p>这轮说明的是：<strong>这个 2–4 ms 的局部位置修正，对后面的回摆作用很弱。</strong>它不否定位置预补偿本身。后续若继续，应识别不同时间段的修正如何影响终点位置和速度，再选择少量有效修正；不宜把测到的某一拍误差直接原样加回该拍，也不能只通过多压终点来掩盖动态回摆。</p>
+<p class="small">本轮继续使用已有三次插补执行链，没有部署四阶 PTP，也没有修改 PID、KV、LLF、滤波器、原点或 Flash。四阶轨迹的离线结论见 <a href="https://zhengpengzhengpeng447-arch.github.io/nyce-reports/reports/position40-fourth-order-study-20260909/">前一份研究报告</a>。</p>
+</section>
+
+<section><h2>力读数：五次稳态接近，早期更新仍有差异</h2>
+<div class="table-wrap"><table><thead><tr><th>实际顺序</th><th>起点均力 · N</th><th>原始 F5 · N</th><th>原始 F7.5 · N</th><th>100–300 ms 均力 · N</th><th>保持阶段峰值 · N</th></tr></thead><tbody><tr><td>A1 基准</td><td>4.998</td><td>11.294</td><td>20.464</td><td>20.142</td><td>20.464</td></tr><tr><td>P 中段少压 0.5 µm</td><td>4.958</td><td>15.513</td><td>20.611</td><td>20.140</td><td>20.611</td></tr><tr><td>A2 基准</td><td>4.955</td><td>14.004</td><td>20.626</td><td>20.146</td><td>20.640</td></tr><tr><td>M 中段多压 0.5 µm</td><td>4.963</td><td>14.678</td><td>20.582</td><td>20.145</td><td>20.596</td></tr><tr><td>A3 基准</td><td>4.974</td><td>8.672</td><td>8.672</td><td>20.150</td><td>20.347</td></tr></tbody></table></div>
+<figure><img src="%E5%8E%9F%E5%A7%8B%E5%8A%9B%E6%9B%B2%E7%BA%BF.png" alt="保留原始时间轴的五次力曲线及最后一次平台"><figcaption>按用户估计的固定 2.5 ms 延迟取原始 7.5 ms，本轮单点 4/5 在 19–21 N；原始 5 ms 为 0/5。该补充口径不认证传感器本体延迟，也不证明 5 ms 后持续带内。</figcaption></figure>
+<p>A3 的原始 4.750–9.375 ms 共 38 行均为 8.672140 N，期间实际位置范围跨越 7.1 µm。这与前面出现过的力源长平台现象一致；五条记录的计数、质量和导出均通过，但这不足以认定力源每拍独立更新。稳态均力范围为 20.140275–20.150474 N，不能用稳态一致覆盖早期测力的不确定性。</p>
+</section>
+
+<section><h2>准备阶段的报错：目标落在半个编码器计数</h2>
+<p>本轮最初慢速准备时，我给出了原始位置 0.00335 mm，而当前位置反馈分辨率为 10,000 count/mm（0.1 µm/计数）。这个目标落在 33.5 个计数，返回的位置给定读数到 0.0034 mm 时，触发慢调程序严格的参考上界检查 <code>CF_REFERENCE 13</code>。</p>
+<p>独立复核确认：首次故障前，已记录的力、电流、实际位置、跟随误差及参考速度/加速度均在本次边界内，故障拍只有参考位置上界不满足。该准备记录保留为 <strong>FAILED / 3,523 行</strong>；它不是此次位置修正快轨迹的失败。故障后的禁用回弹也保留在原始档案，不纳入正常性能评分。</p>
+<p>已修正本轮慢调主机入口：起点和目标必须落在 0.1 µm 的整计数网格，非法目标直接拒绝，不自动四舍五入、不放宽原生守护。完成离线回归与原因审查后，另立修正阶段，执行一次受限 Reset、一次实际位置 Lock，再用 +2 µm 和 +1.5 µm 两次整格慢退恢复预压力，随后五次快测均正常完成。</p>
+<p class="small">整计数要求是本次慢速工具与给定位置读回的兼容性约束，不代表 NYCE 所有小数或亚计数轨迹非法；快测 P/V 仍采用小数插补节点。</p>
+<p class="small">原阶段停止证据保留。两阶段合计四条慢调记录 60,370 行（含上述失败），快测 80,000 行，共 140,370 行真实数据；另有 1 次原生零行启动拒绝和 2 次发送前主机静止检查拒绝，不算实际快动作。</p>
+</section>
+
+<section><h2>保留参数与设备收尾</h2>
+<p>保留页面已有版本：<strong>FF候选·5→20N·提前制动+20mA·3ms·20260909</strong>。P/M 都已保存为实验候选，本轮没有确认新的最佳参数。</p>
+<p class="small">基准不可变版本：<code>cf2285a0eb934c2c3662ad1b8b19a84d8c76037b9cdd36ca9fbde99497aa011b</code></p>
+<div class="downloads"><a href="%E4%BF%9D%E7%95%99%E5%9F%BA%E5%87%86_5ms_41.6um_20mA%E4%B8%AD%E5%BF%833ms.json" download>下载保留基准 JSON</a><a href="profiles/P.json" download>候选 P：中段少压</a><a href="profiles/M.json" download>候选 M：中段多压</a><a href="%E9%80%90%E6%8B%8D%E4%BD%8D%E7%BD%AE%E9%80%9F%E5%BA%A6.csv" download>41 节点位置与速度 CSV</a><a href="%E5%AF%B9%E7%85%A7%E7%BB%93%E6%9E%9C.csv" download>五次实测指标 CSV</a><a href="results.json" download>结果与筛选依据 JSON</a></div>
+<p class="note">2026-09-09 16:55:58 收尾读取：READY、8 kHz、HOMED=1；原始位置 +0.0035 mm，工作位置 +0.0051 mm，预压力约 4.995 N。183 项原生读取成功，137 项配置与起始一致，UDSX 已退出。有限试验已结束，无后续动作排队；这些是结束时快照。</p>
+<details><summary>本地审计与原始证据</summary><p>五次快测共 80,000 行的原生数据、CSV、官方数据库身份、计数、质量、前馈公式和清理检查全部通过；独立代理逐值复算机械指标。</p><p><a title="此项证据保存在本地实验档案">独立机械审查</a> · <a title="此项证据保存在本地实验档案">离线筛选</a> · <a title="此项证据保存在本地实验档案">目标网格回归</a> · <a title="此项证据保存在本地实验档案">收尾状态</a> · <a title="此项证据保存在本地实验档案">准备故障独立审查</a></p><p class="small">公开版仅提供报告、图和上述明确列出的参数/汇总文件；原始采样与设备审计保留在本地档案。</p></details>
+</section><footer>本报告只描述本次接触状态下的有限对照结果。所有预测均与实测分列，历史失败和拒绝均保留。</footer>
+</main></body></html>
