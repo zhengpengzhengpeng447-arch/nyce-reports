@@ -1,0 +1,232 @@
+{
+  "schema": "nyce.settling-ff.public-report.v1",
+  "date": "2026-09-09",
+  "conclusion": "保留基准 C；5–8 ms 附加 −20 mA 候选 T 未通过改善与基准稳定性门槛，未追加确认。",
+  "deployment": {
+    "build": "87bc8324ca342e68",
+    "init_version": 4,
+    "settling_ticks": 80,
+    "old_zero_tail_profile_identity_preserved": true
+  },
+  "counts": {
+    "fast_requests": 3,
+    "fast_actual": 3,
+    "fast_COMPLETE": 3,
+    "fast_failed": 0,
+    "fast_rows": 48000,
+    "slow_records": 1,
+    "slow_rows": 18223,
+    "total_rows": 66223,
+    "slow_total_travel_um": 0.4,
+    "Reset": 0,
+    "Lock": 0,
+    "Home": 0,
+    "Flash_writes": 0,
+    "PID_changes": 0,
+    "startup_handover_refusals": 1
+  },
+  "retained_profile_id": "e324c9a7f282826e962e87e411c4b4b6f2bcbcc1d2dcb3d282ec2f4286b0c84b",
+  "candidate_profile_id": "d534ebdb12458440ec82f5a58ad684dc7c09c4d1c2bd28260196368ea8345edc",
+  "parameters": {
+    "travel_um": 41.6,
+    "reference_arrival_ms": 5,
+    "period_us": 125,
+    "hold_after_arrival_ms": 300,
+    "return_ms": 50,
+    "load_ff_a_per_mm": 26.218328790631716,
+    "velocity_ff_a_per_mm_s": 0.0051,
+    "acceleration_ff_a_per_mm_s2": 3.6e-05,
+    "friction_ff_a": 0.0133,
+    "force_target_n": 20,
+    "force_limit_n": 22,
+    "current_limit_a": 1.5,
+    "candidate_tail": {
+      "support_ms": [
+        5,
+        8
+      ],
+      "peak_ms": 6.5,
+      "peak_a": -0.02,
+      "stored_nodes": 80,
+      "stored_times_ms": [
+        5.125,
+        15
+      ],
+      "implicit_5ms_value_a": 0,
+      "zero_from_ms": 8
+    }
+  },
+  "runs": [
+    {
+      "order": 1,
+      "label": "C 前基准",
+      "profile_id": "e324c9a7f282826e962e87e411c4b4b6f2bcbcc1d2dcb3d282ec2f4286b0c84b",
+      "status": "COMPLETE",
+      "rows": 16000,
+      "fault": 0,
+      "cleanup_ok": true,
+      "metrics": {
+        "rms_endpoint_error_5_25_um": 1.590636420934242,
+        "first_recoil_5_9_um": 4.700000000000003,
+        "overshoot_um": 1.0,
+        "undershoot_5_25_um": 4.700000000000003,
+        "endpoint_error_at_5ms_um": 1.0,
+        "compression_velocity_fit_4_5_to_5_5ms_mm_s": -0.10666666666666628,
+        "rms_endpoint_error_10_25_um": 0.7204222820421476,
+        "maxabs_endpoint_error_10_25_um": 1.8000000000000043,
+        "maxabs_endpoint_error_5_25_um": 4.700000000000003,
+        "baseline_force_N": 4.887417292445898,
+        "static_force_N": 20.15085902273655,
+        "F5_N": 15.454573631286621,
+        "F7_5_N": 20.50843906402588,
+        "peak_abs_command_A": 1.0882569551467896,
+        "peak_abs_Iq_A": 1.0131734609603882,
+        "rms_native_fe_0_5_um": 4.251570728393988,
+        "peak_recorded_force_N": 20.50843906402588,
+        "compression_at_5ms_um": 42.6,
+        "force_5ms_single_point_pass": false,
+        "force_7_5ms_single_point_pass": true,
+        "force_5_25ms_window_pass": false
+      }
+    },
+    {
+      "order": 2,
+      "label": "T 尾段候选",
+      "profile_id": "d534ebdb12458440ec82f5a58ad684dc7c09c4d1c2bd28260196368ea8345edc",
+      "status": "COMPLETE",
+      "rows": 16000,
+      "fault": 0,
+      "cleanup_ok": true,
+      "metrics": {
+        "rms_endpoint_error_5_25_um": 1.5784063037213647,
+        "first_recoil_5_9_um": 4.600000000000001,
+        "overshoot_um": 0.79999999999999,
+        "undershoot_5_25_um": 4.600000000000001,
+        "endpoint_error_at_5ms_um": 0.79999999999999,
+        "compression_velocity_fit_4_5_to_5_5ms_mm_s": -0.10666666666666534,
+        "rms_endpoint_error_10_25_um": 0.8109274355854117,
+        "maxabs_endpoint_error_10_25_um": 1.9000000000000128,
+        "maxabs_endpoint_error_5_25_um": 4.600000000000001,
+        "baseline_force_N": 4.935996492058039,
+        "static_force_N": 20.116836972534657,
+        "F5_N": 15.57176399230957,
+        "F7_5_N": 20.44984245300293,
+        "peak_abs_command_A": 1.100799560546875,
+        "peak_abs_Iq_A": 1.0131734609603882,
+        "rms_native_fe_0_5_um": 4.230233805451005,
+        "peak_recorded_force_N": 20.44984245300293,
+        "compression_at_5ms_um": 42.39999999999999,
+        "force_5ms_single_point_pass": false,
+        "force_7_5ms_single_point_pass": true,
+        "force_5_25ms_window_pass": false
+      }
+    },
+    {
+      "order": 3,
+      "label": "C 后基准",
+      "profile_id": "e324c9a7f282826e962e87e411c4b4b6f2bcbcc1d2dcb3d282ec2f4286b0c84b",
+      "status": "COMPLETE",
+      "rows": 16000,
+      "fault": 0,
+      "cleanup_ok": true,
+      "metrics": {
+        "rms_endpoint_error_5_25_um": 1.688488610805501,
+        "first_recoil_5_9_um": 4.900000000000006,
+        "overshoot_um": 0.6999999999999957,
+        "undershoot_5_25_um": 4.900000000000006,
+        "endpoint_error_at_5ms_um": 0.6999999999999957,
+        "compression_velocity_fit_4_5_to_5_5ms_mm_s": -0.06666666666666288,
+        "rms_endpoint_error_10_25_um": 0.8451123452139764,
+        "maxabs_endpoint_error_10_25_um": 2.000000000000007,
+        "maxabs_endpoint_error_5_25_um": 4.900000000000006,
+        "baseline_force_N": 4.933268153965473,
+        "static_force_N": 20.119711900055407,
+        "F5_N": 10.224921226501465,
+        "F7_5_N": 20.25940704345703,
+        "peak_abs_command_A": 1.0829473733901978,
+        "peak_abs_Iq_A": 1.0023229122161865,
+        "rms_native_fe_0_5_um": 4.243876506789288,
+        "peak_recorded_force_N": 20.25940704345703,
+        "compression_at_5ms_um": 42.3,
+        "force_5ms_single_point_pass": false,
+        "force_7_5ms_single_point_pass": true,
+        "force_5_25ms_window_pass": false
+      }
+    }
+  ],
+  "comparison": {
+    "baseline_rms_mean_um": 1.6395625158698715,
+    "candidate_rms_um": 1.5784063037213647,
+    "RMS_improvement_vs_flanking_mean_percent": 3.7300323443940298,
+    "RMS_improvement_vs_preceding_percent": 0.7688820054613243,
+    "baseline_RMS_span_percent_of_mean": 5.968189009209167,
+    "candidate_late_RMS_increase_vs_preceding_um": 0.09050515354326405,
+    "bracket_gates": {
+      "RMS5to25_improvement_ge5pct": false,
+      "first_recoil_improvement_ge_point2um": true,
+      "overshoot_increase_le_point2um": true,
+      "global_recoil_not_worse": true,
+      "abs_x5_increase_le_point2um": true,
+      "abs_fitv5_increase_le_point5mm_s": true,
+      "late_RMS_increase_le_max_point05um_or5pct": true,
+      "late_maxabs_increase_le_point2um": true
+    },
+    "preceding_baseline_gates": {
+      "RMS5to25_improvement_ge5pct": false,
+      "first_recoil_improvement_ge_point2um": false,
+      "overshoot_increase_le_point2um": true,
+      "global_recoil_not_worse": true,
+      "abs_x5_increase_le_point2um": true,
+      "abs_fitv5_increase_le_point5mm_s": true,
+      "late_RMS_increase_le_max_point05um_or5pct": false,
+      "late_maxabs_increase_le_point2um": true
+    },
+    "baseline_stability_gates": {
+      "C_RMS_difference_le5pct_mean": false,
+      "C_first_recoil_difference_le_point2um": true,
+      "same_reference_start": true
+    },
+    "eligible_for_confirmation": false,
+    "candidate_retention_pass": false
+  },
+  "force": {
+    "raw_5ms_single_point_pass_count": 0,
+    "raw_7_5ms_single_point_pass_count": 3,
+    "raw_5_25ms_window_pass_count": 0,
+    "assumed_delay_ms": 2.5,
+    "delay_identified": false,
+    "raw_time_shifted": false
+  },
+  "audits": {
+    "fast_all_pass": true,
+    "raw_csv_rows": 48000,
+    "raw_csv_channel_values_compared": 1248000,
+    "raw_csv_mismatches": 0,
+    "static_integrity_ok": true,
+    "static_control_ok": true,
+    "configuration_parameters_unchanged": 137
+  },
+  "final_state": {
+    "axis_state": "READY",
+    "raw_mm": 0.0005,
+    "setpoint_mm": 0.0005,
+    "origin_mm": -0.0016,
+    "work_mm": 0.0021000000000000003,
+    "force_N": 4.936673998832703,
+    "Iq_A": 0.09358630329370499,
+    "command_A": 0.0994948297739029,
+    "node_hz": 8000.0,
+    "HOMED": 1,
+    "UDSX": 0,
+    "USER7": 0,
+    "configuration_parameters_unchanged": 137,
+    "no_more_hardware_queued": true
+  },
+  "limitations": [
+    "单次 C–T–C，不是已确认的重复改善。",
+    "基准 C 的 RMS 差已超过冻结 5% 稳定性门，不能从小差异唯一归因尾段前馈。",
+    "新增补偿在 5 ms 及之前为零，该区间的峰值差异不能归因新增尾段。",
+    "原始 7.5 ms 单点按用户固定 2.5 ms 假设作补充，不证明真实 5 ms 力达标或传感器延迟。",
+    "电流命令、Iq 与前馈记录的通道数据龄不同，曲线差值不等于已辨识的真实电流环延迟。"
+  ]
+}
