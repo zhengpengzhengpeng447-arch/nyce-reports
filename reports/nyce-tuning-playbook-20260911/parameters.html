@@ -1,0 +1,382 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>逐拍参数能力与PFC底层逻辑 · NYCE报告</title><meta name="description" content="NYCE 5 ms 力控经验、PFC底层逻辑及逐拍KV/KP/KI优化路线。当前轮次仅研究，无新运动。"><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f5f7f5;color:#203c35;font:16px/1.8 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}a{color:#146a58;text-underline-offset:3px}header{background:#123f35;color:#eefaf4;padding:48px max(24px,calc((100vw - 1160px)/2));}header a{color:#d2eee1}.eyebrow{font-size:13px;letter-spacing:.09em;opacity:.75}header h1{font-size:clamp(28px,4vw,43px);line-height:1.3;margin:16px 0}.lede{max-width:850px;color:#c4e0d3;margin:0}.layout{display:grid;grid-template-columns:215px minmax(0,900px);gap:38px;max-width:1190px;margin:auto;padding:32px 22px}aside{position:sticky;top:20px;align-self:start;max-height:90vh;overflow:auto;font-size:13px;color:#62786f}aside ul{list-style:none;padding:0;margin:0}aside li{padding:5px 0}aside a{text-decoration:none}aside ul ul{display:none}.navtitle{font-weight:700;display:block;margin-bottom:10px}article{min-width:0;background:white;padding:28px 36px 42px;border:1px solid #dce6df;border-radius:12px}article>h1{display:none}article h2{font-size:24px;line-height:1.5;margin:42px 0 16px;padding-top:20px;border-top:1px solid #dde7df;scroll-margin-top:25px}article h2:first-of-type{margin-top:22px}h3{font-size:18px;margin-top:27px}p{margin:13px 0}strong{color:#135c49}.tablewrap{width:100%;overflow-x:auto;margin:20px 0;border:1px solid #dce5df;border-radius:8px}table{width:100%;border-collapse:collapse;min-width:620px;font-size:14px;line-height:1.7}th{text-align:left;background:#eaf2ed;color:#244d3e;font-weight:650}td,th{padding:13px 14px;border-bottom:1px solid #e4ebe6;vertical-align:top}tr:last-child td{border:0}th:first-child,td:first-child{min-width:120px}tr:nth-child(even) td{background:#f8faf8}img{max-width:100%;height:auto;border-radius:8px;border:1px solid #e3e9e5}pre{overflow:auto;background:#eff5f1;padding:18px;border-radius:8px;font-size:13px}code{font:12px/1.8 ui-monospace,SFMono-Regular,monospace;overflow-wrap:anywhere}li{margin:8px 0}.status{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 0}.badge{border:1px solid #5b8975;border-radius:20px;padding:5px 12px;font-size:13px;color:#ddf3e8}.footer{font-size:12px;color:#6b7e73;margin-top:32px;padding-top:20px;border-top:1px solid #dae4dd}.links{display:flex;flex-wrap:wrap;gap:16px;margin-top:20px;font-size:14px}.toc ul{margin:0}@media(max-width:850px){.layout{display:block;padding:20px 14px}aside{position:static;max-height:none;margin-bottom:18px;padding:14px;background:#eaf2ed;border-radius:8px}aside .toc ul{display:flex;flex-wrap:wrap;gap:0 15px}aside .toc ul ul{display:none}article{padding:18px 20px}header{padding:32px 24px}article h2{font-size:22px;margin-top:32px}table{font-size:13px;min-width:580px}}@media print{header{background:white;color:black;padding:20px}header a,.lede{color:#333}aside,.status{display:none}.layout{display:block;max-width:none}article{border:0;padding:0}h2{break-after:avoid}.tablewrap{overflow:visible}table{min-width:0}pre{white-space:pre-wrap}}</style></head><body><header><div class="eyebrow">NYCE · 实验经验与下一步</div><h1>逐拍参数能力与PFC底层逻辑</h1><p class="lede">从已测数据出发，区分平台能力、代码实现和实际效果。保留历史，按回摆优先推进下一轮。</p><div class="status"><span class="badge">2026.09.11</span><span class="badge">15组历史阶段</span><span class="badge">本轮0新运动</span></div><nav class="links"><a href="../../">全部报告</a><a href="index.html">路线总览</a><a href="history.html">历史经验</a><a href="parameters.html">参数与PFC</a><a href="skill/SKILL.md">Skill</a></nav></header><div class="layout"><aside><span class="navtitle">阅读导航</span><div class="toc">
+<ul>
+<li><a href="#_1">三层证据与当前基准</a></li>
+<li><a href="#kpkvki">KP、KV、KI 的控制含义</a></li>
+<li><a href="#_2">参数矩阵</a></li>
+<li><a href="#125-s">每125 µs究竟意味着什么</a></li>
+<li><a href="#pfc">PFC 运行时映射：到底更新什么</a><ul>
+<li><a href="#1">1. 初始化配置与实时状态不是一回事</a></li>
+<li><a href="#2">2. 每周期计算路径</a></li>
+<li><a href="#3">3. 位置环与时序边界</a></li>
+<li><a href="#4-40">4. 能借鉴到40拍什么</a></li>
+</ul>
+</li>
+<li><a href="#_3">建议顺序与验证边界</a></li>
+<li><a href="#kv">历史KV加倍的实测曲线</a></li>
+</ul>
+</div>
+</aside><article><h1 id="nyce-4000125-s">NYCe 4000：125 µs 参数能力、当前实现与下一步顺序</h1>
+<p>2026-09-11。只读研究；未连接控制器、未访问本机服务、未写轴参数、未运行实验、未部署。核对官方 V54 原始 HTML、54.2 SDK、当前实验源码及已存在的最新记录。网页检索未取得比本地版本材料更直接的证据，以下技术结论均来自列出的本地材料。参数矩阵见正文，引用文件的SHA256与行号见来源索引。</p>
+<p><strong>NYCe 官方支持每拍写 KP、KI、KV；当前实验尚未实现逐拍增益。最值得新增的是到位前后的小范围平滑 KV 调度，其后才是单独 KP 调度。KI 先研究积分状态连续性，再考虑调度。</strong> 所有参数都逐拍开放，会同时引入耦合与辨识困难；“能写”并不自动成为有用的实验自由度。</p>
+<h2 id="_1">三层证据与当前基准</h2>
+<ol>
+<li><strong>官方接口支持：</strong> 原始 fast 表列出 23 项，包含 KP/KI/KV、全部六种前馈系数、FF adjustment 和 additive P/V。SDK 交叉核对了显式 <code>@fastDataAccess TRUE</code>。普通参数默认不支持 fast，不能从名字猜测。<a href="sources.html#src-91321be6cd07">原始完整表</a>、<a href="sources.html#src-2d80289530a2">SDK 默认规则</a></li>
+<li><strong>当前实现：</strong> KV 在开始采样前由 owner 写入编译时固定值；collector 每拍读取并检查它不变。SampleStart 正常非零快写只有 <code>FEEDFORWARD_ADJUSTMENT</code>，没有 KV/KP/KI 逐拍表，也没有逐拍 <code>ACTUAL_*_GAIN</code> 记录。P/V 由已缓冲 spline 执行，不能把 P100/V101 表误称每拍调用普通位置写 API。<a href="sources.html#src-3b84ea280340">KV 设置与准备读回</a>、<a href="sources.html#src-4c9a6bc4d571">每拍守恒与 FF 写入</a></li>
+<li><strong>本机实际验证：</strong> H48 使用整段临时 KV=.0005、每次恢复0；实测结果支持这一组合的有限重复，未验证逐拍 KV/KP/KI。最新十次均 COMPLETE，原 H48 六次回摆含 .7/.5/.6/.6/.5/.6 µm，四个 H 时刻/宽度候选没有改善回摆。不能把其中两次 .5 µm 当新候选收益或稳定 .5 µm。<a href="sources.html#src-7647eca56d50">最新完整交接</a></li>
+</ol>
+<p>保留组合 ID <code>3940afb79da4fac46595954913b322436c30ad2de49cd01d371657ae3fb55c7d</code>：19 µm、前40拍5 ms、后60拍恒位，H−48 mA/中心4.75 ms/半宽1.5 ms，E+32 mA/中心3 ms/半宽1 ms；负载 FF23、原生 KFA=.000036、应用速度 FF=.0051、应用平滑摩擦=.0133、KV=.0005。保持300 ms、返回50 ms。最新起点 raw+.0065 mm 是已存实验起点，不能代替未来 fresh 准入。</p>
+<p>已存最终原生快照：KP=4.903831567639214、KI=33.43297501097796、KV=0，LLF开启且 lead/lag=26.60511617632478/239.446045586923 Hz；controller type0，PVL约32 kHz、node8 kHz；微分估计 method0、平均样本数1；standstill/halfway六项均0。最终 KFA=0 是已恢复后的状态，不能写成实验过程 KFA=0。积分输出约+.304372 A，说明当前接触预压存在非零积分偏置；不据此证明所有偏置来源。<a href="sources.html#src-1aaca1bb4967">已存快照</a></p>
+<h2 id="kpkvki">KP、KV、KI 的控制含义</h2>
+<p>已重新视检<a href="sources.html#src-d210685ac030">官方标准控制框图</a>。令 <code>e=x_ref−x_actual</code>，图中 KP 支路为 <code>KP·e</code>，KV 支路为 <code>KV·de/dt</code>；两支路相加后，既直接输出，也进入 <code>1/s</code> 和 KI 的积分支路。因此<strong>固定增益、理想未饱和的标准图</strong>可写成 <code>u_PID=(1+KI/s)(KP+KV·s)e</code>。这不是本机含 LLF、离散微分、限幅、状态管理的完整固件模型。</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>可以改变什么</th>
+<th>逐拍化的价值与局限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KV</td>
+<td>位置误差微分的反馈强度</td>
+<td>对同一时刻不同实测误差会有不同修正，适合研究到位附近阻尼。运动中是近似 <code>KV·(v_ref−v_actual)</code>；仅参考速度为0时才近似纯负速度反馈。加 KV 可能增加量化噪声和总命令波动，不能保证降低回摆。</td>
+</tr>
+<tr>
+<td>KP</td>
+<td>位置误差比例反馈；也改变进入积分支路的量</td>
+<td>可研究末段位置刚度与回摆之间的折中。切换时若误差非零，比例输出会变化；大 KP 可能激发接触共振，降低 KP 也可能增大欠跟。不是单独一条补偿电流。</td>
+</tr>
+<tr>
+<td>KI</td>
+<td>图示积分支路的增益，SDK 单位 rad/s</td>
+<td>控制累积偏差与慢恢复，和 KP/KV 及已有积分状态耦合。不能因为5 ms短便断言无效，也不能把 KI=0 等同于“无扰冻结积分”。</td>
+</tr>
+</tbody>
+</table></div>
+<p>SDK 单位为 KP <code>cout/pu</code>、KV <code>cout·s/pu</code>、KI <code>rad/s</code>。<a href="sources.html#src-040d35ff6a87">精确定义</a>。当前应用把 cout 和 pu 按 A、mm 记录；别把通用SDK在所有轴型的 cout 都写成安培。</p>
+<p><strong>KI 的未知项是实现前置问题。</strong> 对常增益，保存“积分输出”或保存“积分器之前的累计状态”可得相同响应；当 KI 改变时，两者可能导致保持原输出、按新 KI 缩放输出或另外的状态处理。当前官方参数说明未规定 fast 写 KI 后的无扰切换契约，也没有本机 type0 drive 的逐拍实测证明。因而 <code>KI→0</code> 是否保留偏置、重开是否跳变、故障恢复是否延迟更新，都应标为未知；不能借 MCU 反编译伪代码代替当前 drive 固件证明。</p>
+<p>此前回程故障的积分变化分析与固定条件下的 <code>KP·KI·∫e</code> 近似相符，只支持该历史条件下的诊断；并未验证 KI 切换状态。现有 <code>SAC_VAR_INTEGRATOR</code> 单位是 cout，可用于观测积分输出，不能当作未缩放内部状态。<a href="sources.html#src-26daf3e250dd">积分变量</a>、<a href="sources.html#src-040d35ff6a87">阈值与积分开关语义</a></p>
+<p><strong>KV 必须连同现有 LLF 看待。</strong> 官方说明 LLF 可代替理想微分器取得超前作用并减轻高频噪声；KV=0 并不等于系统没有阻尼。NY4120/4125/4130/4140 的 LLF 和 KV 可以独立设置，DriveLink 则在 LLF 开启时忽略 KV；本机 NY4120 不能套用后一条。第一次逐拍 KV 比较应固定 LLF 和微分估计，才能识别 KV 调度效果。<a href="sources.html#src-78be0685a235">LLF解释与驱动差异</a>、<a href="sources.html#src-097f0130af33">微分算法</a></p>
+<h2 id="_2">参数矩阵</h2>
+<p>下表省略共同前缀 <code>SAC_PAR_</code>。“是”指官方 fast 读写支持；“无”指不在该清单且 SDK 无 fast 标记，<strong>不等于所有普通API调用场景都被禁止</strong>。<code>FF_ADJUSTMENT</code> 的准确枚举名是 <code>FEEDFORWARD_ADJUSTMENT</code>。</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>官方fast / 单位</th>
+<th>当前实现与本机证据</th>
+<th>对本任务的定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KV</td>
+<td>是 / cout·s/pu</td>
+<td>启动前固定.0005；每拍守恒，结束恢复0；未逐拍变更</td>
+<td>第一新增候选：末段平滑调度；先验证写入、有效读回与恢复。</td>
+</tr>
+<tr>
+<td>KP</td>
+<td>是 / cout/pu</td>
+<td>固定4.9038316；无逐拍句柄/表</td>
+<td>第二新增候选：单独小幅相位调度，保持KI不变并记录积分。</td>
+</tr>
+<tr>
+<td>KI</td>
+<td>是 / rad/s</td>
+<td>固定33.432975；无逐拍表</td>
+<td>积分状态切换语义验证后再候选；不先做0/原值开关。</td>
+</tr>
+<tr>
+<td>FEEDFORWARD_ADJUSTMENT</td>
+<td>是 / cout</td>
+<td>已在SampleStart合成并快写，raw/CSV/SQL有写入和读值</td>
+<td>最成熟的动态通道：可优化E/H形状与联动，不再只扫已失败的H时宽。它叠加总输出，非强制实际电流。</td>
+</tr>
+<tr>
+<td>KFA</td>
+<td>是 / cout·s²/pu</td>
+<td>原生.000036整段固定、每拍检查、结束恢复；有本机实测</td>
+<td>可研究惯性前馈，但先固定它做KV对照；避免同时把同一a项又加入FF。</td>
+</tr>
+<tr>
+<td>KFV</td>
+<td>是 / cout·s/pu</td>
+<td>原生0；应用.0051×参考速度已并入FF</td>
+<td>对现有参考，逐拍KFV与等效速度FF表高度重叠；不必先增原生写通道，原生/附加路径相位等价尚未认证。</td>
+</tr>
+<tr>
+<td>KFC</td>
+<td>是 / cout</td>
+<td>原生0；应用.0133×tanh(v_ref/.2)已并入FF</td>
+<td>原生图是参考速度sign项，应用为平滑tanh；不能不加核验就替换或双算。</td>
+</tr>
+<tr>
+<td>KFJ</td>
+<td>是 / cout·s³/pu</td>
+<td>原生0，准入要求0；未逐拍实测</td>
+<td>仅在模型/实测支持jerk相关残差时研究；连续轨迹节点与ZOH边界先复算。</td>
+</tr>
+<tr>
+<td>KFSNAP</td>
+<td>是 / cout·s⁴/pu</td>
+<td>原生0，准入要求0；未逐拍实测</td>
+<td>后置。高阶导数对轨迹分段边界敏感；当前cubic spline的段内snap为0，不能据此忽略接缝。</td>
+</tr>
+<tr>
+<td>KFST</td>
+<td>是 / cout</td>
+<td>原生0；预压有积分偏置，加载FF为位置相关项</td>
+<td>可用于模型静态偏置；随时间写KFST又近似新增偏置FF，不等于位置相关FF23。</td>
+</tr>
+<tr>
+<td>ADDITIVE_POS</td>
+<td>是 / pu</td>
+<td>快句柄存在但要求0；当前实际轨迹来自spline</td>
+<td>能改变目标，不是“自动抑振”。须与主轨迹共同算位置/FE/速度/返回与FF，未获本机非零波形验证。</td>
+</tr>
+<tr>
+<td>ADDITIVE_VEL</td>
+<td>是 / pu/s</td>
+<td>快句柄存在但要求0</td>
+<td>可改变速度设定；要验证和ADDITIVE_POS、spline、前馈一致性，不可独立乱配P/V。</td>
+</tr>
+<tr>
+<td>PFC_FORCE_INPUT</td>
+<td>是 / N</td>
+<td>当前播放器不使用PFC</td>
+<td>软件测量力输入，非目标力；无法消除模拟测力迟延/同值段，暂不转此路线。</td>
+</tr>
+<tr>
+<td>PFC_SOURCE_SELECTION</td>
+<td>是 / 枚举</td>
+<td>当前播放器不使用PFC</td>
+<td>反馈源选择，不作为运动中的优化波形。</td>
+</tr>
+<tr>
+<td>CC_KP / CC_KI</td>
+<td>是 / V/A、rad/s</td>
+<td>电流环40/90固定，未逐拍调</td>
+<td>内层电流环不列为自由调参变量。</td>
+</tr>
+<tr>
+<td>CC_MAX_INTEGRATOR_LEVEL / CC_SAT_LEVEL</td>
+<td>是 / 电流环限制</td>
+<td>原配置保持</td>
+<td>不用放宽限制换通过。</td>
+</tr>
+<tr>
+<td>ASYMMETRIC_SATURATION</td>
+<td>是 / BOOL</td>
+<td>原配置保持</td>
+<td>改变输出限幅策略，不作为回摆优化波形。</td>
+</tr>
+<tr>
+<td>MAX_DYN_POS_ERROR / MAX_STEADY_STATE_ERROR</td>
+<td>是 / pu</td>
+<td>原配置与原生运动保护保持</td>
+<td>保护项，排除调优自由度。</td>
+</tr>
+<tr>
+<td>OPEN_LOOP_VALUE / OPEN_LOOP_RAMP</td>
+<td>是 / cout、cout/s</td>
+<td>开环值0，当前位置闭环</td>
+<td>不切开环做本轮抑振。</td>
+</tr>
+<tr>
+<td>PFC_KP</td>
+<td>无 / pu/N</td>
+<td>未进入当前播放器</td>
+<td>力误差转位置修正的增益，与普通KP不同；不能套普通KP fast结论。</td>
+</tr>
+<tr>
+<td>LLF_SWITCH / LLF_LEAD_FREQUENCY / LLF_LAG_FREQUENCY</td>
+<td>无 / BOOL、Hz</td>
+<td>整段固定1、26.605/239.446</td>
+<td>有用但按每次固定配置研究；系数更新代价、相位及滤波状态未知，不先每拍写。</td>
+</tr>
+<tr>
+<td>P/I/D_GAIN_AT_STAND_STILL及P/I/D_HALF_WAY_VEL</td>
+<td>无 / 对应增益、pu/s</td>
+<td>六项0；未使用内建调度</td>
+<td>官方内建按<strong>SPG参考速度</strong>调度，非按实际回摆速度；后60拍参考为0，不能只覆盖5–10ms而随后降噪。</td>
+</tr>
+<tr>
+<td>VELOCITY_ESTIMATION_METHOD / NR_OF_SAMPLES</td>
+<td>无 / 枚举、样本数</td>
+<td>固定0/1</td>
+<td>与KV噪声/相位强相关，后续单独固定配置研究，不能把平均长度增加说成无延迟降噪。</td>
+</tr>
+<tr>
+<td>LPF / notch参数、FEEDFORWARD_ADDITION_POINT</td>
+<td>无 / 滤波配置、枚举</td>
+<td>当前不改；FF addition point=0</td>
+<td>模态明确后有价值；改变滤波/加法点会改变整条控制路径，需单独验证。</td>
+</tr>
+<tr>
+<td>THRESHOLD_VELOCITY / INTEGRATOR_SWITCH_OFF_MODE / CLEGG_ENABLE</td>
+<td>无 / 阈值、枚举、BOOL</td>
+<td>当前不改</td>
+<td>改变积分启用/复位语义；不能代替已验证的无扰KI调度。</td>
+</tr>
+<tr>
+<td>MAX_INTEGRATOR_LEVEL及standstill最大积分限制调度</td>
+<td>无 / cout等</td>
+<td>当前位置环限值保持；type0</td>
+<td>属限值。官方最大积分限制的速度缩放只在MCU PVL执行，不能认为当前drive type0支持相同效果。</td>
+</tr>
+<tr>
+<td>IFC / dither / switched control</td>
+<td>无 / 各增强功能配置</td>
+<td>当前不改</td>
+<td>缺乏针对性收益证据；dither会加输出波动且官方说明controller_out不包含该信号，SCM会关输出，不适合作当前持压调优捷径。</td>
+</tr>
+</tbody>
+</table></div>
+<p>矩阵依据：<a href="sources.html#src-040d35ff6a87">PID与六种FF的SDK定义</a>、<a href="sources.html#src-040d35ff6a87">FF adjustment</a>、<a href="sources.html#src-040d35ff6a87">additive</a>、<a href="sources.html#src-040d35ff6a87">PFC</a>、<a href="sources.html#src-040d35ff6a87">电流PI</a>。</p>
+<p>应用公式精确为 <code>load_ff·relative + velocity_ff·v_ref + friction_ff·tanh(v_ref/.2)</code>，另加逐拍residual；KFA由原生加速度前馈路径提供。<strong>原生系数逐拍化通常不是增加一种全新的物理补偿，而是改变计算发生的位置、时序及记录方式；原生与应用路径完全等价仍需验证。</strong> <a href="sources.html#src-bfcbc8aad11d">当前合成模型</a>、<a href="sources.html#src-3b84ea280340">原生FF零值准入</a></p>
+<p>内建增益调度的官方式为 <code>g_eff = g + (g_standstill−g)/(1+|v_SPG|/v_half)</code>，每种P/I/D分别配置；该式适用于有效halfway配置，不把当前halfway=0直接代入。它看的是SPG速度。同为零参考速度的预压、到位后、长期保持都可能落入同类增益，不能仅凭该机制区分短时回摆窗口和长期低噪声保持。<a href="sources.html#src-850dd4233958">官方公式</a>、<a href="sources.html#src-850dd4233958">最大积分限制只限MCU与其他增强功能</a></p>
+<h2 id="125-s">每125 µs究竟意味着什么</h2>
+<p>初始化阶段打开fast句柄，不能在sample回调开关句柄；<code>UdsxReadData</code> / <code>UdsxWriteData</code>只允许在sample函数调用。表先缓冲到原生侧，按trajectory_tick读取；不靠网页、Node.js、Python或远程RPC每125 µs写一次。<a href="sources.html#src-fd4e11f8a5b4">SDK生命周期规则</a></p>
+<p>官方“SampleStart写本sample、SampleEnd写下sample”描述节点处理顺序。本机node8 kHz、drive PVL32 kHz；它不证明驱动内部哪个31.25 µs子拍锁存新增益，更不证明电流、机械位置和模拟力同刻响应。API成功、参数读回、ACTUAL_P/I/D_GAIN遥测、真实驱动响应是不同证据层。当前collector先读后写FF，因此同一行read/written按读写顺序解释，不能将它们误当同一生效时刻。<a href="sources.html#src-3fd9f7bb323e">官方时序</a>、<a href="sources.html#src-26daf3e250dd">实际增益变量定义</a></p>
+<p>API写入类型是double，但固件KP/KI/KV和FF为FW_FLOAT；BOOL与PFC_SOURCE_SELECTION枚举也在官方fast表，不能笼统说“fast只支持浮点”。每个新增通道都要核单位、量化、状态与范围。LLF等无fast标记；官方允许API表包括普通<code>SacWriteParameter</code>，但没有给出本机逐拍调用这些普通参数更新的时间预算或状态连续性保证。<a href="sources.html#src-0aa02b6bf187">普通API允许表</a></p>
+<h2 id="pfc">PFC 运行时映射：到底更新什么</h2>
+<p><strong>PFC 的可借鉴之处是按反馈生成受限的位置增量、按段切换控制目标和明确退出；现有证据不支持“PFC靠每拍修改KP/KI/KV”这个说法。</strong> fast表只是平台能力，下面单独核对PFC实际计算路径。</p>
+<p>证据版本是知识库固定的 <code>n4kstdmotiond</code>，二进制SHA256 <code>adc0df16fe7e3378e9a4a5ae8b453f89c827811be9c4f9de7ebbd33198f20a6c</code>。材料是Ghidra恢复的C样式伪代码，并非厂商原始C；本次重新读取了恢复输入hash记录和函数文本，未重新核验那个<code>原始构建归档</code>原二进制，也未读取现场运行二进制或drive固件。工具链另存二进制的历史hash不同，不能混用。<a href="sources.html#src-9a52a7716761">输入hash记录</a>、<a href="sources.html#src-eff09316f118">证据来源与限制</a></p>
+<h3 id="1">1. 初始化配置与实时状态不是一回事</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>时机</th>
+<th>读取/写入对象</th>
+<th>已核对证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>应用准备</td>
+<td>传感器槽/模拟通道、方向、1或2次平均、N/V比例</td>
+<td><code>ConfigurePfcSoftLanding</code>的1003–1033行配置与读回传感器；官方传感器配置只允许IDLE/INACTIVE/READY。</td>
+</tr>
+<tr>
+<td>应用准备</td>
+<td><code>PFC_SOURCE_SELECTION</code>、<code>PFC_KP</code>、力阈值</td>
+<td>应用1035–1065行仅在准备时写。<code>PFC_KP</code>参数映射函数将ID <code>0x09e8a301</code>写至<code>DAT_00122ab0</code>；实时分支之后读取该值。</td>
+</tr>
+<tr>
+<td>应用准备</td>
+<td>力段：<code>segmentNr/endForce/rampTime/plateauTime/positionRange/forceControl/generateEvent</code></td>
+<td>应用1068–1078行构建并缓冲；SDK <code>SAC_PFC_FORCE_SEGMENT</code>1705–1715行定义。力段缓冲写入不允许在正在运行的SPG_PFC中进行。</td>
+</tr>
+<tr>
+<td>启动</td>
+<td>先前已缓冲的force profile、SPG/axis状态</td>
+<td>官方<code>SacPfcStartForceProfile</code>进入MOVING/SPG_PFC。它不是每拍重新写完整force profile。</td>
+</tr>
+</tbody>
+</table></div>
+<p>来源：<a href="sources.html#src-c4b7c92dead6">应用准备函数</a>、<a href="sources.html#src-3d61535b76c7">SDK力段结构</a>、<a href="sources.html#src-e0d860ca6329">官方运行状态要求</a>、<a href="sources.html#src-15fea13dfcc1">恢复PFC参数存储</a>。</p>
+<h3 id="2">2. 每周期计算路径</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>实时步骤</th>
+<th>恢复文本实际做的事</th>
+<th>变量/参数区别与行号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>取测量力</td>
+<td>软件源把<code>PFC_FORCE_INPUT</code>复制到actual/average力；模拟源读取所选通道，应用方向与N/V比例，配置2次时做相邻测量平均</td>
+<td>这是反馈输入更新，不是目标力。<code>FUN_00098d60</code>1044–1079；位于SampleStart之后。软件源分支本身未再做模拟2次平均。</td>
+</tr>
+<tr>
+<td>推进段时钟</td>
+<td>每周期累加时间；超过段时长时推进缓冲段，保留余下时间，按标志发送segment-start事件</td>
+<td><code>FUN_000b5b44</code>1273–1350。段参数从缓冲区搬到活动段，并未计算新KP/KI/KV。</td>
+</tr>
+<tr>
+<td>段起点与位置范围</td>
+<td>在相应新段取得当前平均力作为ramp起点，并以实际位置及positionRange建立上下界；包含模位置范围处理</td>
+<td>同函数1296–1328。这是局部位置活动范围；不是重新Home/修改全局原点。</td>
+</tr>
+<tr>
+<td>更新目标力</td>
+<td>ramp时为<code>F_start+(F_end−F_start)·t/T</code>，非ramp使用endForce；写force setpoint遥测槽</td>
+<td>同函数1372–1377。这是力参考插值，不是电流FF插值。</td>
+</tr>
+<tr>
+<td>计算纠偏</td>
+<td><code>Δx=(F_set−F_average)·PFC_KP</code>，存force displacement</td>
+<td>同函数1379–1380；该公式还由SDK <code>SAC_VAR_PFC_FORCE_DISPLACEMENT</code>的说明直接确认，单位pu。</td>
+</tr>
+<tr>
+<td>转成SPG输出</td>
+<td>将<code>Δx</code>写setpoint displacement槽，换算整数/小数位移量；参考速度写<code>Δx×node_frequency</code>；对应setpoint acceleration和jerk槽在该分支写0</td>
+<td>同函数1445–1472；变量注册<code>FUN_00094e98</code>12–16和131–134；node频率存储<code>FUN_0004c020</code>308/316/324/334。这是SPG位移增量路径，不能直接解释为绝对<code>x_ref=x_fixed+Δx</code>。</td>
+</tr>
+<tr>
+<td>position段/越界处理</td>
+<td>forceControl未启用或已锁存位置范围退出时，force setpoint记为当前平均力，force displacement清0；范围超出时锁存本段退出标记</td>
+<td>同函数1355–1371、1382–1387。这是抑制本段力纠偏，不能称自动改了PID增益；并非每次都切成另一个PID控制器。</td>
+</tr>
+<tr>
+<td>最后段结束</td>
+<td>清force setpoint/displacement并触发force-profile-completed事件，随后由通用SPG/axis收尾逻辑处理状态</td>
+<td>同函数1390–1444及1474–1504。事件ID与官方<code>SAC_EV_PFC_FORCE_PROFILE_COMPLETED</code>交叉一致。不能仅凭事件声称达到当前自定义返回160拍资格。</td>
+</tr>
+</tbody>
+</table></div>
+<p>精确源码链接：<a href="sources.html#src-9b2cb387c3b1">采样与力输入</a>、<a href="sources.html#src-a1a343310d6d">PFC逐段计算</a>、<a href="sources.html#src-a1a343310d6d">力误差乘法</a>、<a href="sources.html#src-a1a343310d6d">输出位移/速度/加速度/jerk</a>、<a href="sources.html#src-1c508032d34e">遥测ID到存储槽注册</a>、<a href="sources.html#src-6e8d2d3421f9">node频率</a>、<a href="sources.html#src-26daf3e250dd">SDK纠偏公式</a>。</p>
+<p>这里的acceleration/jerk槽清0<strong>不表示机械加速度/jerk为0，也不是当前40拍cubic spline那样经过完整A/J包络重建的平滑参考。</strong> snap槽在恢复分支还写一个上下文常量，本次没有重建其完整语义，不把它说成完整四阶导数一致轨迹。<code>PFC_KP</code>乘法的正负必须结合本机传感器方向、坐标和控制方向验证；不从“压入为负”直接抄一个正负号。</p>
+<h3 id="3">3. 位置环与时序边界</h3>
+<p>PFC实时分支读取<code>PFC_KP</code>，更新力参考/力纠偏/SPG输出；在已审查路径中未见写普通KP/KI/KV、LLF、KFA等增益的操作。应用配置函数同样没有为了PFC循环去扫这些普通增益。因此证据支持“PFC外层改变参考，原位置伺服执行”，不支持“PFC内部已经替我们做逐拍增益调度”。若另有用户UDSX或内建standstill调度，可独立影响增益，不能归因为PFC本体。</p>
+<p>恢复的主sample函数先执行SampleStart，随后处理力测量和控制，末尾调用SPG生成函数<code>FUN_000b5b44</code>，再调用SampleEnd。<a href="sources.html#src-9b2cb387c3b1">SPG与SampleEnd调用点</a>与官方“末尾生成N+1参考”的说明一致。PFC取本周期已有测量形成后续SPG参考；不能为了宣传125 µs能力抹去这层时序，不能认证真实测力和drive执行无延迟。恢复MCU位置控制<code>FUN_0006147c</code>与本机type0驱动位置环不同，不能把其中积分算法当本机drive算法。</p>
+<h3 id="4-40">4. 能借鉴到40拍什么</h3>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>可借鉴</th>
+<th>对当前方案的具体意义</th>
+<th>尚未完成的边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原生侧按拍推进段与状态</td>
+<td>将到位前、短时回摆抑制、低噪声保持、返回分成明确窗口；KV调度按窗口平滑进出</td>
+<td>这是应用设计借鉴，PFC并未替当前程序实现KV调度。</td>
+</tr>
+<tr>
+<td>参考与反馈分层</td>
+<td>固定H48参考/FF可作为基准，反馈修正只在有限窗口活动并独立记录</td>
+<td>快速抑回摆优先用已可靠的编码器误差研究KV；力反馈仍受测力延迟与同值段约束。</td>
+</tr>
+<tr>
+<td>局部位置范围及明确退出</td>
+<td>外层修正需要累计位移上界、每拍增量/速度边界、退出后归零并恢复原轨迹的契约</td>
+<td>新边界必须与当前10N/1A/FE/速度/返回守护共同验证，不能替换或放宽旧守护。</td>
+</tr>
+<tr>
+<td>段起点来自已观测状态</td>
+<td>在设计无扰切换时明确起始力/位置/积分输出，不能凭旧历史快照直接接入</td>
+<td>同步时钟、测量新鲜度和状态连续性尚需验证。</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>不能直接移植：</strong> PFC的<code>Δx=K·force_error</code>是每拍位移生成，不是随手往现有绝对P100表加一个固定偏移；长期累积、时钟比例、参考速度与FF都需要重新验证。当前力通道存在长同值段，按固定2.5 ms假设平移读数并不能变成实时可用的无延迟反馈；原PFC算法也不能解决这个问题。不能直接把PFC的0加速度/jerk参考搬入当前平滑40拍，不能同时运行两个竞争的SPG，不能凭PFC_KP允许普通写就称其为fast逐拍参数，更不能把历史Stepper的PFC配置当voicecoil本机已验证配方。</p>
+<p>当前最稳妥的排序因此不变：借鉴PFC的<strong>原生分段、反馈修正与限制/退出结构</strong>，先完善KV逐拍通道；真正的PFC式力误差外环列为后续独立能力，等待力数据时序与状态证据。</p>
+<h2 id="_3">建议顺序与验证边界</h2>
+<ol>
+<li><strong>先做证据与实现设计。</strong> 冻结H48与原保护，设计可选KV绝对增益表；少量参数控制入口、峰值、出口，不开放100个互不约束的增益。旧位置JSON缺省行为和ID保持；完整实验组合显式绑定增益表、原生包及恢复值。此研究没有生成已获准执行的新增益数值。</li>
+<li><strong>验证KV通道，再做回摆对照。</strong> 增加逐拍请求KV、已完成写入值、参数读回和有效D遥测/相位证据；记录读取时序，先在离线/mock验证边界、退出及故障恢复，再经独立原生资格验证驱动行为。原值保存、完成/故障恢复以及配置与有效遥测分开核验。现有H48是对照，试验保持同起点、同LLF、同KP/KI/FF，按A–B–A判断回摆；噪声是守门条件，RMS独立报告。</li>
+<li><strong>再比较KP。</strong> KV能力可靠后，仅改变KP时窗或小幅度，记录FE、比例输出估计、积分与总命令。不能同时改KP和KV后宣称识别到各自收益；出现欠跟/保持变化要分开解释。</li>
+<li><strong>KI先做状态验证。</strong> 要有执行前积分输出、切换前后输出及实际I增益、参数写入/恢复、完整返回的证据；辨明是否存在输出缩放或隐含复位。无法辨明前保持KI固定，不把清积分或放宽结束资格当优化。</li>
+<li><strong>随后才扩展FF或固定滤波参数。</strong> E/H联动、KFA/速度/摩擦补偿在已验证的附加FF路径可先做离线模型；不重复双算。LLF/微分估计/内建standstill调度分别做固定配置对照。高阶FF、additive与PFC列后续研究，取决于新增模型和传感器证据。</li>
+</ol>
+<p>上述是研究排序，未执行新运动。保留10 N/1 A/15 µm FE/实际24 mm/s、原返回连续160拍资格及命令/Iq健康门槛。H48规划包络含.45 A基线与.05 A余量为.9983 A，距1 A仅.0017 A；它不是反馈总输出保证，不能据此直接加H或加KV并称仍有充足预算。目标是先降低回摆；历史F7.5单点在用户固定2.5 ms延迟假设下通过，不认证真实5 ms持续稳压或实际测力延迟。</p>
+<h2 id="kv">历史KV加倍的实测曲线</h2>
+<p>该图属于旧C2工况，不是当前H48逐拍KV实测。</p>
+<p><img alt="旧C2上KV加倍：位置、速度与电流" src="images/KV-double.png" /></p><div class="footer">本页为已完成文档研究。新增逐拍增益与PFC式外环均未部署、未实测；日期明确的设备状态和参数不能代替下次现场准入。<br><a href="parameters.md">下载本页Markdown</a> · <a href="sources.html">查看来源索引</a></div></article></div></body></html>

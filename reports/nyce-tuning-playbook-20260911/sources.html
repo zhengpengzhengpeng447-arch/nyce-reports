@@ -1,0 +1,432 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>来源、版本与核查索引 · NYCE报告</title><meta name="description" content="NYCE 5 ms 力控经验、PFC底层逻辑及逐拍KV/KP/KI优化路线。当前轮次仅研究，无新运动。"><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f5f7f5;color:#203c35;font:16px/1.8 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}a{color:#146a58;text-underline-offset:3px}header{background:#123f35;color:#eefaf4;padding:48px max(24px,calc((100vw - 1160px)/2));}header a{color:#d2eee1}.eyebrow{font-size:13px;letter-spacing:.09em;opacity:.75}header h1{font-size:clamp(28px,4vw,43px);line-height:1.3;margin:16px 0}.lede{max-width:850px;color:#c4e0d3;margin:0}.layout{display:grid;grid-template-columns:215px minmax(0,900px);gap:38px;max-width:1190px;margin:auto;padding:32px 22px}aside{position:sticky;top:20px;align-self:start;max-height:90vh;overflow:auto;font-size:13px;color:#62786f}aside ul{list-style:none;padding:0;margin:0}aside li{padding:5px 0}aside a{text-decoration:none}aside ul ul{display:none}.navtitle{font-weight:700;display:block;margin-bottom:10px}article{min-width:0;background:white;padding:28px 36px 42px;border:1px solid #dce6df;border-radius:12px}article>h1{display:none}article h2{font-size:24px;line-height:1.5;margin:42px 0 16px;padding-top:20px;border-top:1px solid #dde7df;scroll-margin-top:25px}article h2:first-of-type{margin-top:22px}h3{font-size:18px;margin-top:27px}p{margin:13px 0}strong{color:#135c49}.tablewrap{width:100%;overflow-x:auto;margin:20px 0;border:1px solid #dce5df;border-radius:8px}table{width:100%;border-collapse:collapse;min-width:620px;font-size:14px;line-height:1.7}th{text-align:left;background:#eaf2ed;color:#244d3e;font-weight:650}td,th{padding:13px 14px;border-bottom:1px solid #e4ebe6;vertical-align:top}tr:last-child td{border:0}th:first-child,td:first-child{min-width:120px}tr:nth-child(even) td{background:#f8faf8}img{max-width:100%;height:auto;border-radius:8px;border:1px solid #e3e9e5}pre{overflow:auto;background:#eff5f1;padding:18px;border-radius:8px;font-size:13px}code{font:12px/1.8 ui-monospace,SFMono-Regular,monospace;overflow-wrap:anywhere}li{margin:8px 0}.status{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 0}.badge{border:1px solid #5b8975;border-radius:20px;padding:5px 12px;font-size:13px;color:#ddf3e8}.footer{font-size:12px;color:#6b7e73;margin-top:32px;padding-top:20px;border-top:1px solid #dae4dd}.links{display:flex;flex-wrap:wrap;gap:16px;margin-top:20px;font-size:14px}.toc ul{margin:0}@media(max-width:850px){.layout{display:block;padding:20px 14px}aside{position:static;max-height:none;margin-bottom:18px;padding:14px;background:#eaf2ed;border-radius:8px}aside .toc ul{display:flex;flex-wrap:wrap;gap:0 15px}aside .toc ul ul{display:none}article{padding:18px 20px}header{padding:32px 24px}article h2{font-size:22px;margin-top:32px}table{font-size:13px;min-width:580px}}@media print{header{background:white;color:black;padding:20px}header a,.lede{color:#333}aside,.status{display:none}.layout{display:block;max-width:none}article{border:0;padding:0}h2{break-after:avoid}.tablewrap{overflow:visible}table{min-width:0}pre{white-space:pre-wrap}}</style></head><body><header><div class="eyebrow">NYCE · 实验经验与下一步</div><h1>来源、版本与核查索引</h1><p class="lede">从已测数据出发，区分平台能力、代码实现和实际效果。保留历史，按回摆优先推进下一轮。</p><div class="status"><span class="badge">2026.09.11</span><span class="badge">15组历史阶段</span><span class="badge">本轮0新运动</span></div><nav class="links"><a href="../../">全部报告</a><a href="index.html">路线总览</a><a href="history.html">历史经验</a><a href="parameters.html">参数与PFC</a><a href="skill/SKILL.md">Skill</a></nav></header><div class="layout"><aside><span class="navtitle">阅读导航</span><div class="toc">
+<ul>
+<li><a href="#_2">来源可信度</a></li>
+<li><a href="#_3">官方与源码定位</a><ul>
+<li><a href="#-d22e3877htm">-d22e3877.htm</a></li>
+<li><a href="#group__sac__parametersmd">group__sac__parameters.md</a></li>
+<li><a href="#position40_ownerc">position40_owner.c</a></li>
+<li><a href="#position40_collectorc">position40_collector.c</a></li>
+<li><a href="#agentsmd">AGENTS.md</a></li>
+<li><a href="#final-nativejson">final-native.json</a></li>
+<li><a href="#img27857baffe25e6df0a6846a00008c1db_1_en_us_png72png">img27857baffe25e6df0a6846a00008c1db_1_en_US_PNG72.png</a></li>
+<li><a href="#sacparametersh">sacparameters.h</a></li>
+<li><a href="#sacvariablesh">sacvariables.h</a></li>
+<li><a href="#-d22e6609md">-d22e6609.md</a></li>
+<li><a href="#-d22e5332md">-d22e5332.md</a></li>
+<li><a href="#position40_modelc">position40_model.c</a></li>
+<li><a href="#-d22e6009md">-d22e6009.md</a></li>
+<li><a href="#udsxapih">udsxapi.h</a></li>
+<li><a href="#-d22e3143md">-d22e3143.md</a></li>
+<li><a href="#-d22e3143htm">-d22e3143.htm</a></li>
+<li><a href="#input_sha256txt">input_sha256.txt</a></li>
+<li><a href="#code-knowledge-basemd">code-knowledge-base.md</a></li>
+<li><a href="#nyce_embapp_udsx_hsd_contact_stopc">nyce_embapp_udsx_hsd_contact_stop.c</a></li>
+<li><a href="#sactypesh">sactypes.h</a></li>
+<li><a href="#-d22e16983md">-d22e16983.md</a></li>
+<li><a href="#0005f034_fun_0005f034c">0005f034_FUN_0005f034.c</a></li>
+<li><a href="#00098d60_fun_00098d60c">00098d60_FUN_00098d60.c</a></li>
+<li><a href="#000b5b44_fun_000b5b44c">000b5b44_FUN_000b5b44.c</a></li>
+<li><a href="#00094e98_fun_00094e98c">00094e98_FUN_00094e98.c</a></li>
+<li><a href="#0004c020_fun_0004c020c">0004c020_FUN_0004c020.c</a></li>
+</ul>
+</li>
+<li><a href="#_4">历史实验来源</a></li>
+<li><a href="#_5">可公开的核查清单</a></li>
+</ul>
+</div>
+</aside><article><h1 id="_1">参考文献与来源索引</h1>
+<p>本页列出核查版本、文件摘要和原始行号。原始官方手册、SDK、恢复代码与完整实验原始文件保存在本地知识库和实验档案；这些摘要用于辨别来源，未把私有路径或完整第三方源码公开。</p>
+<p>本轮覆盖当前对话中的用户决策、引用任务最近8轮、15组历史阶段的53份来源，以及逐拍参数/PFC研究的26项引用；不是重新独立计算所有历史原始行。当前输出0新运动、0新轴参数变更。</p>
+<h2 id="_2">来源可信度</h2>
+<ul>
+<li>官方V54手册和54.2 SDK：确认接口、单位、fast属性、时序约定。</li>
+<li>当前应用源：确认播放器真正实现的通道、守护和恢复。</li>
+<li>Ghidra恢复代码：解释所恢复版本的PFC路径，不冒称当前drive厂商源码；输入hash记录为adc0df16fe7e3378e9a4a5ae8b453f89c827811be9c4f9de7ebbd33198f20a6c，本轮未读取现场二进制。</li>
+<li>历史results/analysis：确认已保存实测结论，只有指定的统计核对不是全量raw重算。</li>
+</ul>
+<h2 id="_3">官方与源码定位</h2>
+<p><a id="src-91321be6cd07"></a></p>
+<h3 id="-d22e3877htm">-d22e3877.htm</h3>
+<p>引用行号：5。
+SHA256：<code>91321be6cd07671a7e911779596c3eb69fda5c30e9477004e052801bc1ecf5d4</code>。</p>
+<p><a id="src-2d80289530a2"></a></p>
+<h3 id="group__sac__parametersmd">group__sac__parameters.md</h3>
+<p>引用行号：5。
+SHA256：<code>2d80289530a28597984cbcb50313f02be14797228fe07d3c8d9065f0a8375a9b</code>。</p>
+<p><a id="src-3b84ea280340"></a></p>
+<h3 id="position40_ownerc">position40_owner.c</h3>
+<p>引用行号：79、258。
+SHA256：<code>3b84ea28034039f671f71bc9c43da746536c43c0b2eb6ac96d36db74ffeae3d9</code>。</p>
+<p><a id="src-4c9a6bc4d571"></a></p>
+<h3 id="position40_collectorc">position40_collector.c</h3>
+<p>引用行号：51。
+SHA256：<code>4c9a6bc4d5714280fea5ed7596773114845dbecd0e68abd960eb584d2e430723</code>。</p>
+<p><a id="src-7647eca56d50"></a></p>
+<h3 id="agentsmd">AGENTS.md</h3>
+<p>引用行号：1。
+SHA256：<code>7647eca56d5096d2fc4ee8853611fbb85468efeb3c859f49aee5b44f310a718f</code>。</p>
+<p><a id="src-1aaca1bb4967"></a></p>
+<h3 id="final-nativejson">final-native.json</h3>
+<p>引用行号：1。
+SHA256：<code>1aaca1bb49671a8d293ad7dacbfbf1c52e34b8d9526f99ef017186c9e665f286</code>。</p>
+<p><a id="src-d210685ac030"></a></p>
+<h3 id="img27857baffe25e6df0a6846a00008c1db_1_en_us_png72png">img27857baffe25e6df0a6846a00008c1db_1_en_US_PNG72.png</h3>
+<p>引用行号：文件整体。
+SHA256：<code>d210685ac030e55059dfbeb1845993da39e27b2220e8754cc6f47ca27b58a38d</code>。</p>
+<p><a id="src-040d35ff6a87"></a></p>
+<h3 id="sacparametersh">sacparameters.h</h3>
+<p>引用行号：258、434、489、1287、2361、2807。
+SHA256：<code>040d35ff6a87d22d026582462bd3324ee2cc0206563befdf1c670184d5951470</code>。</p>
+<p><a id="src-26daf3e250dd"></a></p>
+<h3 id="sacvariablesh">sacvariables.h</h3>
+<p>引用行号：138、287、754。
+SHA256：<code>26daf3e250ddf37eeb8c0b9cf49487ba864b9e728f9f45a05d8e2e2b0342d4c3</code>。</p>
+<p><a id="src-78be0685a235"></a></p>
+<h3 id="-d22e6609md">-d22e6609.md</h3>
+<p>引用行号：51。
+SHA256：<code>78be0685a2356b6153c8fc19ecc3c34e12027dec623c07b4176bb9e83ae533d5</code>。</p>
+<p><a id="src-097f0130af33"></a></p>
+<h3 id="-d22e5332md">-d22e5332.md</h3>
+<p>引用行号：27。
+SHA256：<code>097f0130af33fac5a6f0fc5f01c570d67835f2721f2f75d39a67d5ea4ca49bde</code>。</p>
+<p><a id="src-bfcbc8aad11d"></a></p>
+<h3 id="position40_modelc">position40_model.c</h3>
+<p>引用行号：40。
+SHA256：<code>bfcbc8aad11d1048e3a72f918827ec14b423940dcd3bef382a54fb245942b2a2</code>。</p>
+<p><a id="src-850dd4233958"></a></p>
+<h3 id="-d22e6009md">-d22e6009.md</h3>
+<p>引用行号：20、94。
+SHA256：<code>850dd4233958bc40229ee0b186cb0006303670d5813c773c47ac28323170495c</code>。</p>
+<p><a id="src-fd4e11f8a5b4"></a></p>
+<h3 id="udsxapih">udsxapi.h</h3>
+<p>引用行号：80。
+SHA256：<code>fd4e11f8a5b48e4aaa66310a5b85eb09487738641053a89840a59a6f4d0bb2f6</code>。</p>
+<p><a id="src-3fd9f7bb323e"></a></p>
+<h3 id="-d22e3143md">-d22e3143.md</h3>
+<p>引用行号：51。
+SHA256：<code>3fd9f7bb323e0abbefc2068a8462148afd79037eba5e54334cf1bbf0a1d0196a</code>。</p>
+<p><a id="src-0aa02b6bf187"></a></p>
+<h3 id="-d22e3143htm">-d22e3143.htm</h3>
+<p>引用行号：22。
+SHA256：<code>0aa02b6bf1876572c0176b96a16434205803e1c754b65939b63226a50bab0ad0</code>。</p>
+<p><a id="src-9a52a7716761"></a></p>
+<h3 id="input_sha256txt">input_sha256.txt</h3>
+<p>引用行号：1。
+SHA256：<code>9a52a77167619de367684414e52a562f1519149e2da527d724deff11a30a0b55</code>。</p>
+<p><a id="src-eff09316f118"></a></p>
+<h3 id="code-knowledge-basemd">code-knowledge-base.md</h3>
+<p>引用行号：14。
+SHA256：<code>eff09316f1187b6b4edd2bd5ecf2b2fd072942bb13878616927f11a6e107ac82</code>。</p>
+<p><a id="src-c4b7c92dead6"></a></p>
+<h3 id="nyce_embapp_udsx_hsd_contact_stopc">nyce_embapp_udsx_hsd_contact_stop.c</h3>
+<p>引用行号：993。
+SHA256：<code>c4b7c92dead60ecd6c532b141fcf87ead259ad664cbb395979258876436cf37d</code>。</p>
+<p><a id="src-3d61535b76c7"></a></p>
+<h3 id="sactypesh">sactypes.h</h3>
+<p>引用行号：1705。
+SHA256：<code>3d61535b76c7faa1f01e97023c926b177ad61086ad6f2e2fb819b34b6bd7a976</code>。</p>
+<p><a id="src-e0d860ca6329"></a></p>
+<h3 id="-d22e16983md">-d22e16983.md</h3>
+<p>引用行号：25。
+SHA256：<code>e0d860ca632953bec4314f5940d39c0297a746459c4b33d055f01807c29edb46</code>。</p>
+<p><a id="src-15fea13dfcc1"></a></p>
+<h3 id="0005f034_fun_0005f034c">0005f034_FUN_0005f034.c</h3>
+<p>引用行号：10。
+SHA256：<code>15fea13dfcc1301dcd8bcb1cbb0303792cf2df0b2fc3f90885291b2f7f2d58fc</code>。</p>
+<p><a id="src-9b2cb387c3b1"></a></p>
+<h3 id="00098d60_fun_00098d60c">00098d60_FUN_00098d60.c</h3>
+<p>引用行号：1001、1929。
+SHA256：<code>9b2cb387c3b14f84f600d3c7c05317c46e01e230cd26b74a1fd69d75ce8b9960</code>。</p>
+<p><a id="src-a1a343310d6d"></a></p>
+<h3 id="000b5b44_fun_000b5b44c">000b5b44_FUN_000b5b44.c</h3>
+<p>引用行号：1273、1379、1445。
+SHA256：<code>a1a343310d6deb310dfb16c652ef78ab66e89ac63f88b7b67778c6cb9afed314</code>。</p>
+<p><a id="src-1c508032d34e"></a></p>
+<h3 id="00094e98_fun_00094e98c">00094e98_FUN_00094e98.c</h3>
+<p>引用行号：8。
+SHA256：<code>1c508032d34eb622e4f5e3dedaee241742d26b3daaecaeedd69164fac040aea0</code>。</p>
+<p><a id="src-6e8d2d3421f9"></a></p>
+<h3 id="0004c020_fun_0004c020c">0004c020_FUN_0004c020.c</h3>
+<p>引用行号：301。
+SHA256：<code>6e8d2d3421f9b97048c1766bd515fdeef0b2d9ab3dc946cc2031ceb8a5ac62e0</code>。</p>
+<h2 id="_4">历史实验来源</h2>
+<p>路径均相对实验工作目录，作为归档定位符，不是本站缺失的下载链接。</p>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>归档文件</th>
+<th>SHA256</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S01</td>
+<td><code>data/current-step-response-20260908/response-metrics.json</code></td>
+<td><code>84bb6f13387868b2d5b9bf6378ac86e823e1c9b48faf1ea5f8088f89bbd91b07</code></td>
+</tr>
+<tr>
+<td>S02</td>
+<td><code>data/current-step-response-20260908/analysis.md</code></td>
+<td><code>facd21eeb23067bfe025969d3cfa69063f60e8466fd57a2877b9f2bd087f6149</code></td>
+</tr>
+<tr>
+<td>S03</td>
+<td><code>data/current-step10-force16-20260908/response-metrics.json</code></td>
+<td><code>f0d3e9cfcb905b79df60cbb3610631c6a7afe0223052c77ba75f60f948068c69</code></td>
+</tr>
+<tr>
+<td>S04</td>
+<td><code>data/current-step10-force16-20260908/analysis.md</code></td>
+<td><code>d61f5a1cbc34a30e5f1d277e14f5a2976077c3df3b777bb1cc10e4862d5c4d96</code></td>
+</tr>
+<tr>
+<td>S05</td>
+<td><code>data/position40-asymmetric-20260909/results.json</code></td>
+<td><code>a7f0372597eaf4bcbf2293bfff518269096a04a8ef7394bae9f1fd3dadb66420</code></td>
+</tr>
+<tr>
+<td>S06</td>
+<td><code>data/position40-asymmetric-20260909/analysis.md</code></td>
+<td><code>728108a612e96ba4b72f82f888e619eca43629130d1a4f7dee6fccb83748ff23</code></td>
+</tr>
+<tr>
+<td>S07</td>
+<td><code>data/position40-fourth-order-study-20260909/results.json</code></td>
+<td><code>b5897fcfaee9ed151f137d5ba71a2e8f8cae527e1e53c130b3504b14d4669f6a</code></td>
+</tr>
+<tr>
+<td>S08</td>
+<td><code>data/position100-firstshot-20260909/results.json</code></td>
+<td><code>c9409621b498a64be495c0a9dc36ec0236e9f945e748ca7938aa894ac7e85c8f</code></td>
+</tr>
+<tr>
+<td>S09</td>
+<td><code>data/position100-tail10-20260909/results.json</code></td>
+<td><code>fd51a67451b51b69a7b4a7f34dcbf08286923e9394d123d12bdb6c73011add0e</code></td>
+</tr>
+<tr>
+<td>S10</td>
+<td><code>data/position100-tail10-20260909/analysis.md</code></td>
+<td><code>51e1261581cf1231568724aac5a969638b52e5bb1935efca2c70bb749950a236</code></td>
+</tr>
+<tr>
+<td>S11</td>
+<td><code>data/position100-tail001-20260909/results.json</code></td>
+<td><code>17836c49a6073e863e5a28c8bcd8f90eb351dc3ec0f79991f786581f35c08b82</code></td>
+</tr>
+<tr>
+<td>S12</td>
+<td><code>data/position100-tail001-20260909/analysis.md</code></td>
+<td><code>24c7955bf68dd70969e4bc71025fda14b9a22c1f3bad5b95a5520eac55f3cad2</code></td>
+</tr>
+<tr>
+<td>S13</td>
+<td><code>data/position100-ilc-confirm-20260909/results.json</code></td>
+<td><code>48cca6cf23d5bfeb10b2b7d33858daac8ffb80ada97346448314298292ed9203</code></td>
+</tr>
+<tr>
+<td>S14</td>
+<td><code>data/position100-ilc-confirm-20260909/analysis.md</code></td>
+<td><code>60186aca7cc27c63a6bcc846c5f6f0572f990a83768a07458fb8046e06f87cc1</code></td>
+</tr>
+<tr>
+<td>S15</td>
+<td><code>data/position100-ilc-amplitude-20260909/results.json</code></td>
+<td><code>e325cdfa4d6f9ca56b0dc70325c034c80584b95e4d50e69b76565520f4c96d24</code></td>
+</tr>
+<tr>
+<td>S16</td>
+<td><code>data/position100-ilc-amplitude-20260909/analysis.md</code></td>
+<td><code>59488baad5df9b2f2d5eeab2dfb4ed11465e6e3c2c50aefaaa989e8ba7732c28</code></td>
+</tr>
+<tr>
+<td>S17</td>
+<td><code>data/position100-2to23-20260910/analysis.md</code></td>
+<td><code>a628198cee6d7c1d612f689209c85c01d509e24d0196e0505f769ec35a5b69ec</code></td>
+</tr>
+<tr>
+<td>S18</td>
+<td><code>data/position100-2to23-ptp-20260910/results.json</code></td>
+<td><code>f8ba0843d0bd318465724c3b7a13b454e16c673f2d5edd96fa93b00b3d0fb7d5</code></td>
+</tr>
+<tr>
+<td>S19</td>
+<td><code>data/position100-2to23-tune-20260910/results.json</code></td>
+<td><code>e6db88274a2302fa60fa9fc7c5cc0fb6f505aa11d7cb49a3f66950d7f82859b8</code></td>
+</tr>
+<tr>
+<td>S20</td>
+<td><code>data/position100-2to8-prediction-20260910/results.json</code></td>
+<td><code>f8802b516a6439a381fce8c399b5cc9c311e2f41b066cdd187b491df761ea9ad</code></td>
+</tr>
+<tr>
+<td>S21</td>
+<td><code>data/position100-2to8-prediction-20260910/analysis.md</code></td>
+<td><code>1d06176aba409297a15bcdbea23e2a77714d386b9eb5d557dee8ff07410b6c74</code></td>
+</tr>
+<tr>
+<td>S22</td>
+<td><code>data/position100-antirebound-ff-20260910/results.json</code></td>
+<td><code>bf4929f201f7269f871ab18d28e8bbaded3eae8b93744b91741e4f9f719da9b0</code></td>
+</tr>
+<tr>
+<td>S23</td>
+<td><code>data/position100-antirebound-ff-20260910/analysis.md</code></td>
+<td><code>ab16d07dbd2af46b0a36b8b372638ad390ab4a2ad407fb085e6b0ecc875b7efb</code></td>
+</tr>
+<tr>
+<td>S24</td>
+<td><code>data/position100-2to8-duration-20260910/results.json</code></td>
+<td><code>b68a471899215592793cfeb39359fd3009502b2c987cd14518023ee6d7a50b65</code></td>
+</tr>
+<tr>
+<td>S25</td>
+<td><code>data/position100-2to8-duration-20260910/analysis.md</code></td>
+<td><code>bcc8f9995268358d066b8ae14e38d25d291f3c581e64ff05e9fd7f45a9c1a119</code></td>
+</tr>
+<tr>
+<td>S26</td>
+<td><code>data/lfs02-elasticity-validation-20260910/results.json</code></td>
+<td><code>cd0c133c63f7e39173e10475f61cb343d736e4f1961e9de4d52d3142a7dda272</code></td>
+</tr>
+<tr>
+<td>S27</td>
+<td><code>data/lfs02-elasticity-validation-20260910/验证进展.md</code></td>
+<td><code>927fcffd12aba2e1d17da2c01696aa2a63446ef7dbd0104685ea3332ddcdcfe0</code></td>
+</tr>
+<tr>
+<td>S28</td>
+<td><code>data/position100-2to8-terminal-ff-20260911/analysis.md</code></td>
+<td><code>68658fa1f7a6b55d24965e8bfea0d735b291867afac25c7ee4c14227e9b91abb</code></td>
+</tr>
+<tr>
+<td>S29</td>
+<td><code>data/position100-2to8-stronger-20260911/analysis.md</code></td>
+<td><code>8f1a25538f19b48df8e0e43eb1a2e1ca22451004a828b710139cd1f1d7eeebcd</code></td>
+</tr>
+<tr>
+<td>S30</td>
+<td><code>data/position100-2to8-stronger-20260911/report-results.json</code></td>
+<td><code>4603cfe4c38fc570b3305f3a383415c405c07c708649d342c6f14e713e7c6881</code></td>
+</tr>
+<tr>
+<td>S31</td>
+<td><code>data/position100-2to8-kv-20260911/results.json</code></td>
+<td><code>86442dbed30719713f1062434f8d7f36f4a974b082e76b63cf8c096bce4809e2</code></td>
+</tr>
+<tr>
+<td>S32</td>
+<td><code>data/position100-2to8-kv-20260911/analysis.md</code></td>
+<td><code>a8ba5b13722ecc3da55784d297e8ac89a6203da8fd45217c88efc61b5ba0fa7f</code></td>
+</tr>
+<tr>
+<td>S33</td>
+<td><code>data/position100-2to8-kv-double-20260911/results.json</code></td>
+<td><code>f62267acc1610b7e6311ced8229a556aae4ae7cc01248eff6e287da94c8c12e6</code></td>
+</tr>
+<tr>
+<td>S34</td>
+<td><code>data/position100-2to8-kv-double-20260911/analysis.md</code></td>
+<td><code>3af9db296b0e92e079d1581aa7b79278ac355c3ef77ec38f1a9478a02780bc94</code></td>
+</tr>
+<tr>
+<td>S35</td>
+<td><code>data/position100-2to8-stronger-20260911/review/UDSX与PFC逐拍参数核查.md</code></td>
+<td><code>6abc6c0a6717de20f1bf47ae1e2df28d27b5c2b7017e3d0d37815d3ad73f5d33</code></td>
+</tr>
+<tr>
+<td>S36</td>
+<td><code>data/position100-2to8-kv-ff-20260911/analysis.md</code></td>
+<td><code>2215493b93f191f8eb91a1d0c2ac98a72b5ec92efd28d6c783c5da2b2e02f749</code></td>
+</tr>
+<tr>
+<td>S37</td>
+<td><code>data/position100-2to8-kv-ff-confirm-20260911/analysis.md</code></td>
+<td><code>1e8703de97f5327d8a826c7f576c8cf91725e624d7e6c4e9481daa8f36a2aa45</code></td>
+</tr>
+<tr>
+<td>S38</td>
+<td><code>data/position100-2to8-kv-ff-confirm-20260911/confirmation-results.json</code></td>
+<td><code>bb7a979148cb2e140a3eb9c17e64bfe84486cd3073fb1d17ffdebef8bea14f64</code></td>
+</tr>
+<tr>
+<td>S39</td>
+<td><code>data/position100-2to8-kv-ff-timing-restart-20260911/failure-analysis.md</code></td>
+<td><code>11e2c1eeb17e7d311b3c46e3bfc0a2dc10d1464223cb4090cf1e81a4c3226339</code></td>
+</tr>
+<tr>
+<td>S40</td>
+<td><code>data/position100-2to8-kv-ff-timing-restart-20260911/failure-results.json</code></td>
+<td><code>13abb6acd0264a028c6b5df93a034f90e1578a869c137186221773f8c63d1acf</code></td>
+</tr>
+<tr>
+<td>S41</td>
+<td><code>data/position100-2to8-fixture-retune-20260911/results.json</code></td>
+<td><code>44e44d40bd059434e7a1abf477152799a39b53e5c2852137b3376dec56b70727</code></td>
+</tr>
+<tr>
+<td>S42</td>
+<td><code>data/position100-2to8-fixture-retune-20260911/analysis.md</code></td>
+<td><code>2fb4f74edfcf3cc642bc773c1337493efa213effc39e305af0c3ebf6360a992a</code></td>
+</tr>
+<tr>
+<td>S43</td>
+<td><code>data/position100-2to8-fixture-lowkv-ff44-20260911/results.json</code></td>
+<td><code>fffe8e2953354ae9cfb98153ae9b51b4faf1b2e593a6352f443eb5e1b4018571</code></td>
+</tr>
+<tr>
+<td>S44</td>
+<td><code>data/position100-2to8-fixture-lowkv-ff44-20260911/analysis.md</code></td>
+<td><code>eda77891f081ccd42f74d6979a076dd69e2d30da463d9e2b296ff1ced1405c5b</code></td>
+</tr>
+<tr>
+<td>S45</td>
+<td><code>data/position100-2to8-fixture-lowkv-timing-20260911/results.json</code></td>
+<td><code>ceebe4e1a833a5b0eebdf99ab317263ecb93b87e33b227d2bbba72a8499c3e86</code></td>
+</tr>
+<tr>
+<td>S46</td>
+<td><code>data/position100-2to8-fixture-lowkv-timing-20260911/analysis.md</code></td>
+<td><code>cc84fc0999db83a332dd0910c2103a9554312cef29af753f855e19d4082dc690</code></td>
+</tr>
+<tr>
+<td>S47</td>
+<td><code>data/position100-2to8-rebound-first-confirm-20260911/results.json</code></td>
+<td><code>45997f7327eb38d771eba727fae3527f944968423c0cdeee32cdc44e79e0465f</code></td>
+</tr>
+<tr>
+<td>S48</td>
+<td><code>data/position100-2to8-rebound-first-confirm-20260911/analysis.md</code></td>
+<td><code>adf7c2481a2d5bd71e47e355a53f9bdf2c48098c77259e2498e85a46d3dbc957</code></td>
+</tr>
+<tr>
+<td>S49</td>
+<td><code>data/position100-2to8-H48-timing-20260911/results.json</code></td>
+<td><code>60404fc76b2634b9aa88169f38dc1348220f13c4733c205c1a8618cd03e37d52</code></td>
+</tr>
+<tr>
+<td>S50</td>
+<td><code>data/position100-2to8-H48-timing-20260911/analysis.md</code></td>
+<td><code>2c32f790d5dcba21dd3c2a7cc5acdfe76532908e24212bc4ecf05c2c4af33faa</code></td>
+</tr>
+<tr>
+<td>S51</td>
+<td><code>data/position100-2to8-H48-timing-20260911/十次对照指标.csv</code></td>
+<td><code>95512ae187d64f340f41596cb77227eee65ffe2755c2868c8a252ac5c05dc6f6</code></td>
+</tr>
+<tr>
+<td>S52</td>
+<td><code>data/position100-2to8-H48-width-20260911/review/turn-audit.json</code></td>
+<td><code>abb505f24dcf3618e779a786862a64dcf48ba19e82f96c0e3f660c0006aa3bef</code></td>
+</tr>
+<tr>
+<td>AGENTS</td>
+<td><code>AGENTS.md</code></td>
+<td><code>7647eca56d5096d2fc4ee8853611fbb85468efeb3c859f49aee5b44f310a718f</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="_5">可公开的核查清单</h2>
+<p><a href="source-index.json">来源哈希JSON</a>；<a href="history.html">历史说明</a>；<a href="parameters.html">参数说明</a>。</p>
+<p>旧站已发布的实验仍保留在<a href="../../">报告首页</a>。本文没有覆盖或重新评分旧报告。</p><div class="footer">本页为已完成文档研究。新增逐拍增益与PFC式外环均未部署、未实测；日期明确的设备状态和参数不能代替下次现场准入。<br><a href="sources.md">下载本页Markdown</a> · <a href="sources.html">查看来源索引</a></div></article></div></body></html>

@@ -1,0 +1,108 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>15组历史：结果、失败原因与边界 · NYCE报告</title><meta name="description" content="NYCE 5 ms 力控经验、PFC底层逻辑及逐拍KV/KP/KI优化路线。当前轮次仅研究，无新运动。"><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f5f7f5;color:#203c35;font:16px/1.8 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}a{color:#146a58;text-underline-offset:3px}header{background:#123f35;color:#eefaf4;padding:48px max(24px,calc((100vw - 1160px)/2));}header a{color:#d2eee1}.eyebrow{font-size:13px;letter-spacing:.09em;opacity:.75}header h1{font-size:clamp(28px,4vw,43px);line-height:1.3;margin:16px 0}.lede{max-width:850px;color:#c4e0d3;margin:0}.layout{display:grid;grid-template-columns:215px minmax(0,900px);gap:38px;max-width:1190px;margin:auto;padding:32px 22px}aside{position:sticky;top:20px;align-self:start;max-height:90vh;overflow:auto;font-size:13px;color:#62786f}aside ul{list-style:none;padding:0;margin:0}aside li{padding:5px 0}aside a{text-decoration:none}aside ul ul{display:none}.navtitle{font-weight:700;display:block;margin-bottom:10px}article{min-width:0;background:white;padding:28px 36px 42px;border:1px solid #dce6df;border-radius:12px}article>h1{display:none}article h2{font-size:24px;line-height:1.5;margin:42px 0 16px;padding-top:20px;border-top:1px solid #dde7df;scroll-margin-top:25px}article h2:first-of-type{margin-top:22px}h3{font-size:18px;margin-top:27px}p{margin:13px 0}strong{color:#135c49}.tablewrap{width:100%;overflow-x:auto;margin:20px 0;border:1px solid #dce5df;border-radius:8px}table{width:100%;border-collapse:collapse;min-width:620px;font-size:14px;line-height:1.7}th{text-align:left;background:#eaf2ed;color:#244d3e;font-weight:650}td,th{padding:13px 14px;border-bottom:1px solid #e4ebe6;vertical-align:top}tr:last-child td{border:0}th:first-child,td:first-child{min-width:120px}tr:nth-child(even) td{background:#f8faf8}img{max-width:100%;height:auto;border-radius:8px;border:1px solid #e3e9e5}pre{overflow:auto;background:#eff5f1;padding:18px;border-radius:8px;font-size:13px}code{font:12px/1.8 ui-monospace,SFMono-Regular,monospace;overflow-wrap:anywhere}li{margin:8px 0}.status{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 0}.badge{border:1px solid #5b8975;border-radius:20px;padding:5px 12px;font-size:13px;color:#ddf3e8}.footer{font-size:12px;color:#6b7e73;margin-top:32px;padding-top:20px;border-top:1px solid #dae4dd}.links{display:flex;flex-wrap:wrap;gap:16px;margin-top:20px;font-size:14px}.toc ul{margin:0}@media(max-width:850px){.layout{display:block;padding:20px 14px}aside{position:static;max-height:none;margin-bottom:18px;padding:14px;background:#eaf2ed;border-radius:8px}aside .toc ul{display:flex;flex-wrap:wrap;gap:0 15px}aside .toc ul ul{display:none}article{padding:18px 20px}header{padding:32px 24px}article h2{font-size:22px;margin-top:32px}table{font-size:13px;min-width:580px}}@media print{header{background:white;color:black;padding:20px}header a,.lede{color:#333}aside,.status{display:none}.layout{display:block;max-width:none}article{border:0;padding:0}h2{break-after:avoid}.tablewrap{overflow:visible}table{min-width:0}pre{white-space:pre-wrap}}</style></head><body><header><div class="eyebrow">NYCE · 实验经验与下一步</div><h1>15组历史：结果、失败原因与边界</h1><p class="lede">从已测数据出发，区分平台能力、代码实现和实际效果。保留历史，按回摆优先推进下一轮。</p><div class="status"><span class="badge">2026.09.11</span><span class="badge">15组历史阶段</span><span class="badge">本轮0新运动</span></div><nav class="links"><a href="../../">全部报告</a><a href="index.html">路线总览</a><a href="history.html">历史经验</a><a href="parameters.html">参数与PFC</a><a href="skill/SKILL.md">Skill</a></nav></header><div class="layout"><aside><span class="navtitle">阅读导航</span><div class="toc">
+<ul>
+<li><a href="#e01">E01｜瞬时打入静态电流：力很快上升，稳定时间仍更长</a></li>
+<li><a href="#e02">E02｜非对称与四阶：更接近终点不等于更接近停稳</a></li>
+<li><a href="#e0340100">E03｜40→100 点：兼容性有实测，延长恒位表本身未确认减振</a></li>
+<li><a href="#e04">E04｜位置尾补：抬高共同目标谷值可能只是终点变化</a></li>
+<li><a href="#e05-ilc">E05｜位置 ILC：冻结终点和独立确认得到有限收益，继续放大未获新最佳</a></li>
+<li><a href="#e06223-n-5-ms-ptp">E06｜2→23 N 和同 5 ms 普通 PTP：前馈匹配与严格同口径比较很关键</a></li>
+<li><a href="#e07223-28">E07｜2→23 缩为 2→8：事前预测回摆方向通过，首峰没有同比缩小</a></li>
+<li><a href="#e08565-51255">E08｜5→6→5 与 5→12.5→5：时标敏感是真事实，削峰和欠跟要同时报</a></li>
+<li><a href="#e09">E09｜传感器：记录恒值与整机柔性都真实存在，单体归因仍不可辨识</a></li>
+<li><a href="#e10-ff">E10｜两窗逐拍 FF：弱辨识探索与新确认必须分开</a></li>
+<li><a href="#e11kv00005001-aba">E11｜KV0/.0005/.001：回摆与命令噪声的取舍已用同期 A–B–A 观察</a></li>
+<li><a href="#e12-h34kv00107-m467-n">E12｜旧接触 H34+KV.001：三次0.7 µm是局部重复，收尾4.67 N阻止旧起点续测</a></li>
+<li><a href="#e13218">E13｜夹具变化后218：先静态重匹配，再区分完成与健康评分</a></li>
+<li><a href="#e14kvh48">E14｜新夹具低KV到H48：按新回摆优先规则重新选型</a></li>
+<li><a href="#e15h4810">E15｜最新H48四个时刻/宽度候选：10次全部完成，四者都没降低回摆</a></li>
+<li><a href="#_1">反复未达目标的共性，以及证据允许的解释</a></li>
+<li><a href="#_2">可复现的下一轮原则</a></li>
+</ul>
+</div>
+</aside><article><h1 id="nyce-5-ms-15">NYCE 5 ms 调试历史：15 个有源事实与复现实验原则</h1>
+<p>2026-09-11，只读复核。本文读取项目 AGENTS.md、已存 analysis/report/results 和指标文件，没有访问硬件、执行新运动、修改旧记录或发布。来源索引保存53份归档文件的SHA256；本文保留阶段设置、结果与结论边界，选定原JSON字段另存本地；这次是历史证据复核，不冒充重新独立重算全部原始采样。</p>
+<p>用户主目标是 5 ms 达到目标力 ±5%。用户接受“固定延迟 2.5 ms”的假设口径，因此可以另报原始 F7.5 作为假设 5 ms 单点；真实传感器延迟、真实 5 ms 力与持续稳压仍未认证。所有原始曲线时钟保留。当前优化顺序是先降低回摆，RMS、欠跟、力和保持噪声分别报告；不能沿用旧 RMS 筛选规则否决新的回摆收益，也不能只把首峰压浅就宣称全面改善。</p>
+<p><strong>历史指标并不完全同义。</strong> 非对称、100点首测、尾补、ILC和2→23调优中的旧字段 <code>undershoot_5_25_um</code> 是“固定目标以下最大欠量”，部分旧报告也称回摆；它不是近期0..25ms“此前峰值到后续谷值的最大退回”。本文将两者明确分开，不把旧5.0/9.5与新0.6直接画成同定义的优化趋势。首峰到首谷、完整有先后次序最大退回和固定窗负速度面积也各不相同。</p>
+<h2 id="e01">E01｜瞬时打入静态电流：力很快上升，稳定时间仍更长</h2>
+<p>设置与结果：2026-09-08 的 5→6 N 试验把新鲜静态测得的总命令电流一次打入，由 +0.0860764 A 到 +0.00996535 A。只执行一次 STEP6；同阶段含 A1 零增量和 15 条慢准备，共 17 条记录、320452 行。力上升 0.1 N 首次及 1 ms 持续判据均为 2.75 ms；F5=6.00604 N，峰值 6.18183 N；进入并持续保持 6±0.1 N 从 10.75 ms 开始。另一个独立 5→10 N 完整阶跃阶段共 28 条记录、537229 行，F5=10.89877 N，峰值 12.94961 N，持续 10±0.5 N 从 29.875 ms 开始。</p>
+<p>能支持：直接电流可快速产生力变化，但本条件下仍有明显振荡和稳定时间。不能支持：把位置起动与力起动的阈值差当作传感器固有延迟；将一次 6 N 的 F5 合格外推为 10/20 N 稳定通过。命令/Iq 读回也不是独立电流探头。</p>
+<p>来源：<code>data/current-step-response-20260908/{analysis.md,response-metrics.json}</code>；<code>data/current-step10-force16-20260908/{analysis.md,response-metrics.json}</code>。</p>
+<h2 id="e02">E02｜非对称与四阶：更接近终点不等于更接近停稳</h2>
+<p>设置与结果：非对称 A–B–A 保持 41.6 µm、40×125 µs=5 ms 和相同 FF。A 为 1.5 ms 加速、0.5 ms 匀速、3 ms 减速；B 为 1 ms 加速、4 ms 减速。3 条实际动作均 COMPLETE/48000 行；另有一条启动前 FAILED209、无运动、871 行，不能并成第 4 条实际动作。A/B/A 过冲 1.7/1.5/1.6 µm，固定目标以下最大欠量 5.3/5.4/5.4 µm，5..25 ms RMS 1.693667/1.713048/1.731585 µm。B 的 5 ms 误差较小，但该拍已以 −2.4 mm/s 回撤。</p>
+<p>四阶研究仅离线复用 10 条 COMPLETE/160000 行，没有新硬件动作。理想 5 ms/41.6 µm 四阶曲线在现三次插补中的位置近似误差约 0.0000216667 µm；候选仍触发现有首段反向微凸守护、未执行。能支持：参考表示误差远小于已观测微米级轴回退，改变时序必须连同 v5 和后续谷值判断。不能支持：四阶已改善硬件、近似误差证明某个唯一故障来源、约 180 Hz 闭环尾响应就等于机械 FRF/共振频率。</p>
+<p>来源：<code>data/position40-asymmetric-20260909/{analysis.md,results.json}</code>；<code>data/position40-fourth-order-study-20260909/results.json</code>。</p>
+<h2 id="e0340100">E03｜40→100 点：兼容性有实测，延长恒位表本身未确认减振</h2>
+<p>设置与结果：新增 position100 格式，保留全部旧 40 点文件、ID 和执行路径；前 40 点 P/V/R 完全相同，后 60 点恒位、V/R=0。软件交付阶段 0 新运动。首次 H100–C40–H100 共 3 条 COMPLETE/48000 快行，加一条慢准备 18711 行，总 66711 行。H/C/H 固定目标以下最大欠量 4.6/5.0/4.9 µm；RMS 1.474083/1.638095/1.615088 µm。H2 对 C RMS 仅改善 1.4045%，两 H 预压力还相差 0.1575 N。</p>
+<p>能支持：旧数据和 40 点执行保持可用，100 点实际读回 142 段，40 点 82 段，兼容和完整返回通过。不能支持：把 12.5 ms 表长当作 5 ms 运动变慢，或将第一 H 较好唯一归因 100 点。第一观察到 spline2，不能宣称每个 100 段时长都被单独观察。</p>
+<p>来源：<code>data/position100-extension-20260909/</code> 的交付证据、AGENTS.md 对应段；<code>data/position100-firstshot-20260909/results.json</code>。</p>
+<h2 id="e04">E04｜位置尾补：抬高共同目标谷值可能只是终点变化</h2>
+<p>设置与结果：先做 40 拍后 10 拍平滑多压 1 µm，H/T 两次 COMPLETE/32000 快行；原 H–T–H 的第三 H 因离线评分锚点断言失败未执行。相对共同 41.6 µm 目标，目标下最大欠量 4.9→3.8 µm、RMS 1.59444→1.20764 µm；相对各自最终目标，下欠量 4.9→4.8 µm，T RMS 1.63388 µm，原生 FE RMS 也未改善。</p>
+<p>之后独立 H–R–H，每个第 41..100 点多压 0.01 µm、共 0.6 µm，3 次 COMPLETE/48000 行。共同目标 RMS 降 12.3979%，原生 FE RMS 降 5.7251%，共同目标下最大欠量 5.0/4.6/5.0 µm；R 仅一次。能支持：有限的小幅共同目标/跟踪收益。不能支持：等价于增加阻尼、生产重复性，或“FF 没变”；P/V 一改，派生加速度和负载 FF 也随之改变。0.01 µm 是指令间隔，实际编码器格点仍 0.1 µm。</p>
+<p>来源：<code>data/position100-tail10-20260909/{analysis.md,results.json}</code>；<code>data/position100-tail001-20260909/{analysis.md,results.json}</code>。</p>
+<h2 id="e05-ilc">E05｜位置 ILC：冻结终点和独立确认得到有限收益，继续放大未获新最佳</h2>
+<p>设置与结果：固定 point40 与最终 41.6 µm，用三个平滑 B 样条位置基函数，中心 6.75/8.75/10.75 ms，系数 [0.5,0.5,0.370888946] µm；最后回原终点。辨识、补齐与确认共 12 请求/11 实际 COMPLETE、176000 运动行，另保留启动前拒绝 864 行及一慢 18388 行，总 195252 行。两个新 C 在独立夹测中 RMS 改善 7.6285%/9.1876%，先平均再比值综合 8.4061%；固定目标下最大欠量从 5.0 到 4.6/4.5 µm。</p>
+<p>独立加幅 C–1.5C–C–2C–C 共 5 次 COMPLETE/80000 行；另启动前无运动 898 行，6 请求共 80898 行。D/E 的夹测 RMS 改善 4.8349%/3.0400%，低于当时预先 5% 确认线，后窗还分别差 1.38%/7.12%，未执行预留确认。能支持：固定终点、训练与新确认分离的少量平滑学习可改善当前条件。不能支持：模型预测就是实测收益、幅值越大越好、单次最低 RMS 就是稳定最优。</p>
+<p>来源：<code>data/position100-ilc-confirm-20260909/{analysis.md,results.json}</code>；<code>data/position100-ilc-amplitude-20260909/{analysis.md,results.json}</code>。</p>
+<h2 id="e06223-n-5-ms-ptp">E06｜2→23 N 和同 5 ms 普通 PTP：前馈匹配与严格同口径比较很关键</h2>
+<p>设置与结果：2→23 N 首表为 57.7 µm/5 ms、负载 FF18，一次 FAILED206/997 行，5.625 ms 原生 FE−15.2 µm。5 ms 实际 45.9 µm、目标 57.7 µm；未获得正常持载/回程，故障后的 F7.5 无效。独立普通 PTP 同 57.7 µm/5 ms、原反馈参数、KFA/KFV/附加 FF=0，一次 FAILED CF_FE、3286 行；相对首次 PTPING 2.125 ms 原生 FE−16.2 µm，参考压入 21.9 µm、实际 1.2 µm。完整 5 ms 参考未执行完，不存在可认证 F5/F7.5。慢速 PTP 同程可到约 23.042 N，约 5.8 秒，不算 5 ms 通过。</p>
+<p>另一个新阶段将表负载 FF18→25.5，保持 57.7 µm/5 ms 形状不变，3 次 COMPLETE/48000 快行，连同 6 慢 116963 行共 164963 行。原始 F5=15.9966/9.9466/13.1108 N，0/3；假设 F7.5=23.4675/23.4822/22.8816 N，单点 3/3，原始/假设持续 5..25 窗口均 0/3；固定目标以下最大欠量仍 9.5/9.6/9.5 µm。</p>
+<p>能支持：当前反馈加零 FF 的普通 5 ms PTP 跟不上；足够负载 FF 与表完整完成一致。不能支持：纯粹比较了 PTP 与表规划器、PTP 算法先天不行、只因电流饱和失败，或三次假设单点通过等于真实 5 ms 稳压。PTP SampleEnd 和表 SampleStart 相差一个 125 µs 相位，触发定义也应明确。</p>
+<p>来源：<code>data/position100-2to23-20260910/{analysis.md,results.json}</code>；<code>data/position100-2to23-ptp-20260910/results.json</code>；<code>data/position100-2to23-tune-20260910/results.json</code>。</p>
+<h2 id="e07223-28">E07｜2→23 缩为 2→8：事前预测回摆方向通过，首峰没有同比缩小</h2>
+<p>设置与结果：同形 P/V 从 57.7 缩至 16.5 µm，比例 16.5/57.7；前 40 点仍 5 ms，FF25.5 和其余系数不变，新阶段 10 N/1 A 保护。事前预测只由旧 15 条 COMPLETE/240000 行建立，预测峰谷 2.9835355 µm，工程带 1..4 µm。一次新快测 COMPLETE/16000 行，加慢 19026 行，共 35026 行；实测首峰 17.8、首谷 15.2 µm，峰谷 2.6 µm，落入冻结范围，比历史峰谷均值少 75.0799%。</p>
+<p>首次过冲却为 +1.3 µm，高于旧均值 +1.0 µm 和线性预测 +0.28596 µm；RMS0.451361 µm，保持均力 7.98063 N，原始 F5=4.93667 N 未过、假设 F7.5=8.33522 N 单点过。能支持：降低动作幅度后回退明显变小、一次预测区间被新数据支持。不能支持：所有误差线性缩放、长期重复性、传感器是主因。行程/速度/加速度/控制负担一起变了，旧 23 N 不是同期同起点 A。</p>
+<p>来源：<code>data/position100-2to8-prediction-20260910/{analysis.md,results.json}</code>。</p>
+<h2 id="e08565-51255">E08｜5→6→5 与 5→12.5→5：时标敏感是真事实，削峰和欠跟要同时报</h2>
+<p>设置与结果：23 N/57.7 µm 的 5–6–5 ms 对照回摆 10.5/6.6/10.4 µm，B 峰谷少约 36.84%，但首峰欠 1.4 µm，6 ms 实际仍欠 2.0 µm且在回撤；终点后 20 ms RMS 仅改善 5.5736%。另两次 5 ms 小幅抗回弹 −12 mA FF 对照未确认新收益；总 5 次 COMPLETE/80000 行。</p>
+<p>2→8 N 的独立 5–12.5–5 ms 对照保持 16.5 µm 和全局 FF，B 100 拍全程运动。3 次 COMPLETE/48000 快行，加慢 19504 行，共 67504 行。完整运动至各自终点后 20 ms 最大退回 2.6/0.1/3.0 µm；B 的 12.5 ms 实际仅 15.3 µm、欠 1.2 µm，至 32.5 ms 最大 15.7 µm仍欠 0.8，RMS 只改善 5.2905%。能支持：回摆对运动时标敏感，B 宽窗中没有漏掉大回摆。不能支持：0.1 µm 就是物理零振动、慢版达到 5 ms 或 12.5 ms 力目标、某个唯一机理；慢版主要转成较平缓欠跟。</p>
+<p>来源：<code>data/position100-antirebound-ff-20260910/{analysis.md,results.json}</code>；<code>data/position100-2to8-duration-20260910/{analysis.md,results.json}</code>。</p>
+<h2 id="e09">E09｜传感器：记录恒值与整机柔性都真实存在，单体归因仍不可辨识</h2>
+<p>设置与结果：用户提供 LFS-02-20N 型号；历史 0–10 V→0–30 N 是放大器/采集映射，不等于单体额定 30 N，也不能据型号把旧力值乘 2/3。专门离线复核 2 慢+3 快、176124 历史行，0 新运动。加载/卸载整机表观刚度 0.363480/0.353326 N/µm，快记录编码器峰谷 10.5/10.4/10.4 µm；现有 26 通道没有跨传感器两端的独立位移。</p>
+<p>能支持：整机存在柔性且编码器轴确实回退，不能仅用力显示延迟解释。不能支持：传感器贡献比例、固有延迟、自然频率、是否损坏或动态回摆主因。力恒值平台同时伴随位置变化，raw/CSV/SQL 一致只证明存储一致，不证明力每拍更新；需已知带宽/延迟的独立跨传感器位移或受控换件对照。普通千分表可给静态柔度，不能认证 5 ms 动态。</p>
+<p>来源：<code>data/lfs02-elasticity-validation-20260910/{验证进展.md,results.json}</code>；AGENTS.md“用户补充传感器型号”段。厂家系列描述仅是待核实背景，本文没有重新做网络验证，不将其作为单只器件动态保证。</p>
+<h2 id="e10-ff">E10｜两窗逐拍 FF：弱辨识探索与新确认必须分开</h2>
+<p>设置与结果：2→8 N/16.5 µm/5 ms，在 E中心3 ms、半宽1 ms与 H中心5.25 ms、半宽1.5 ms加紧支撑脉冲 b=(1−z²)³，按 125 µs ZOH。首轮 10 条 COMPLETE/160000 快行，一慢 19503 行，总 179503 行。±10 mA 中心差分响应与基准变化/量化相当，未通过可靠辨识资格；另按弱证据探索新 C=E+16/H−7 mA，三次回摆 3.1/3.3/3.1 µm，相邻 A3.7/3.7，少 14.4144%，但 10..25 RMS 差 6.1371%，当时未作为全面最佳。</p>
+<p>再一独立 11 次 COMPLETE/176000 行阶段确认 C2=E+32/H−14 mA。相邻 C 回摆2.0/2.0，三新 C2为1.5/1.4/1.5 µm、均少26.6667%；5..25 RMS 0.444373→0.371045 µm，少16.5015%，10..25也少13.8654%。原始 F5三次均失败，假设 F7.5三次单点过。能支持：同形参考下特定局部 FF 有限复测收益。不能支持：±10 mA 已可靠辨识整个对象、筛选成功可混入独立三次确认、平均速度变小就是 v5=0，或 FF 表是模拟连续电流/在线学习。</p>
+<p>来源：<code>data/position100-2to8-terminal-ff-20260911/analysis.md</code>；<code>data/position100-2to8-stronger-20260911/{analysis.md,report-results.json}</code>。</p>
+<h2 id="e11kv00005001-aba">E11｜KV0/.0005/.001：回摆与命令噪声的取舍已用同期 A–B–A 观察</h2>
+<p>设置与结果：同 C2先 KV0→.0005→0，3 次 COMPLETE/48000 行。回摆1.5/1.1/1.4 µm，B少24.1379%，约0.25 µm来自削峰、抬谷约0.1 µm；5..25 RMS却差1.1247%，10..25差30.4356%，保持命令 pp约增5.7倍。之后独立 .0005→.001→.0005，3次 COMPLETE/48000 行，事前按回摆优先：回摆1.3/1.0/1.3 µm，少23.0769%，满足比每A至少少0.2 µm；主RMS少3.7829%，后窗差9.7140%，保持命令SD约翻倍至21.559 mA。</p>
+<p>能支持：在现 LLF 条件下增加 KV 有回摆收益，同时加大命令噪声，不能简单说 KV无效或越大越好。不能支持：B重复性已证、无KV就无阻尼、每拍KV已实现、已知真实绕组电流尖峰。两阶段每条均在采样前设置整段常数 KV，退出恢复0。KV作用于位置误差导数，不能在整段有参考速度的运动中直接等同 −KV×vactual。位置JSON单独导入不会应用临时KV。</p>
+<p>来源：<code>data/position100-2to8-kv-20260911/{analysis.md,results.json}</code>；<code>data/position100-2to8-kv-double-20260911/{analysis.md,results.json}</code>；<code>data/position100-2to8-stronger-20260911/review/UDSX与PFC逐拍参数核查.md</code>。</p>
+<h2 id="e12-h34kv00107-m467-n">E12｜旧接触 H34+KV.001：三次0.7 µm是局部重复，收尾4.67 N阻止旧起点续测</h2>
+<p>设置与结果：固定16.5 µm/FF25.5/KV.001，在 C2的H−14上筛选−24/−34 mA，其余不变。筛选4+确认4，共8实际 COMPLETE/128000行；三条新H34确认回摆均0.7 µm，相邻指定A均1.0，少30%；目标下欠量也改善，主RMS少22.5063%，后窗差1.2363%。原始F5三条均失败，假设F7.5均过；保持命令SD最后一条24.2446 mA，接近25 mA门槛。</p>
+<p>所有快测起点均合格，但之后静止收尾F4.673 N，rawSP不变、READY、KV已0；该新读数不能倒算为已完成动作失败，也不能直接再按2N起点跑。能支持：三次同接触条件减回摆和必须fresh检查。不能支持：生产可靠性/全局最优、因FF导致事后力变化、READY就等于预压合格。</p>
+<p>来源：<code>data/position100-2to8-kv-ff-confirm-20260911/{analysis.md,confirmation-results.json}</code>；<code>data/position100-2to8-kv-ff-20260911/analysis.md</code>。</p>
+<h2 id="e13218">E13｜夹具变化后218：先静态重匹配，再区分完成与健康评分</h2>
+<p>设置与结果：用户说明夹具变过，旧H34/16.5 µm/FF25.5/KV.001原版单测 FAILED218/6224行。首故障662.625 ms，完整返回资格需±0.3 µm位置和原生FE、连续160拍及状态合格；故障前最长35拍（执行顺序含fault行36拍），不是5ms参考没跑完、力/电流超限或积分已饱和。故障后 ERROR/电流0 的位移和约6.21 N不可算主5ms回摆。参数KV已写回0，但ERROR下actualD仍.001，原审计失败保留，不能将缓存机理当已证结论。</p>
+<p>独立恢复1 Reset+1实际位置Lock，27慢动作524779行。新加载/卸载表观刚度0.322818/0.322276 N/µm，命令电流位置斜率22.7295/22.7078 A/mm，因此改19 µm/FF23；H34、KV.001与时序不变。2次快 COMPLETE/32000行，总556779新增行；原返回资格均通过，保持积分相对预压从旧+31.46 mA到−4.86/−2.59 mA。第二条命令SD25.1962 mA超25 mA事后健康线，第三条没执行。</p>
+<p>能支持：静态负载失配参与慢回程，重匹配后原返回资格恢复两次；第二条是COMPLETE后的健康停止。不能支持：已分离行程/FF各自贡献、无新故障就可继续、将FAILED故障后回弹当候选好坏或将COMPLETE改成原生失败。</p>
+<p>来源：<code>data/position100-2to8-kv-ff-timing-restart-20260911/{failure-analysis.md,failure-results.json}</code>；<code>data/position100-2to8-fixture-retune-20260911/{analysis.md,results.json}</code>。</p>
+<h2 id="e14kvh48">E14｜新夹具低KV到H48：按新回摆优先规则重新选型</h2>
+<p>设置与结果：19 µm/FF23 下 KV降.0005，2条H34加H34–H44–H34，共5次 COMPLETE/80000行，健康均过。H44对照三条回摆均.9 µm，没有幅值收益。独立H时刻5.25/4.75/5.25/5.75/5.25 ms共5次 COMPLETE/80000快行，一慢18705行；回摆1.1/.8/1.0/1.1/1.0 µm，提前版比相邻均值少.25 µm，但主RMS差25.35%，按该阶段旧RMS门槛未选。这个历史决定不改写。</p>
+<p>用户随后明确回摆优先，新独立9次 COMPLETE/144000行、0慢。保持H中心4.75 ms，比较H34/H48；H48在同期夹测由A均.75到.6 µm、少20%，再H48–H34–H48为.6/.7/.6。H48三次均.6 µm；5ms欠跟均.5 µm、最大目标下欠量均1.0 µm。能支持：在新优先级下采用H48/4.75 ms作为实验基准，RMS列代价。不能支持：.6为物理极限、3次格点相同就是整条曲线相同、用新夹具和旧夹具差值宣称KV独立因果收益。</p>
+<p>来源：<code>data/position100-2to8-fixture-lowkv-ff44-20260911/{analysis.md,results.json}</code>；<code>data/position100-2to8-fixture-lowkv-timing-20260911/{analysis.md,results.json}</code>；<code>data/position100-2to8-rebound-first-confirm-20260911/{analysis.md,results.json}</code>。</p>
+<h2 id="e15h4810">E15｜最新H48四个时刻/宽度候选：10次全部完成，四者都没降低回摆</h2>
+<p>设置与结果：H48原版中心4.75 ms/半宽1.5 ms；新候选中心4.625/4.875 ms或半宽1.25/1.75 ms。E+32中心3/半宽1 ms、19 µm/FF23、临时KV.0005、5ms/100点、保持300/返回50均不变。fresh预压1.69927 N后仅一次慢压1 µm到rawSP+.0065，18707行；10次快同起点、不夹慢调，全COMPLETE/160000行，合计178707行、0拒绝/0新原生故障。</p>
+<p>时刻A/Early/A/Late/A回摆 .7/.7/.5/.6/.6 µm；宽度A/Narrow/A/Wide/A为 .6/.6/.5/.6/.6 µm。四候选均不满足“比相邻A均值至少少.1 µm且不差于每条A”。Wide主RMS改善8.0627%，最大回退仍.6且谷值延至8.25 ms，因此按回摆优先不升级。六条原版 .7/.5/.6/.6/.5/.6全保留；两次.5都是原版，不能称候选突破或稳定.5。探索.4目标未达，四候选失败也不证明极限。</p>
+<p>原始F5为0/10，假设F7.5为10/10单点；这仍不认证真实延迟/真实5ms持续稳压。最终保留配方3940afb79da4fac46595954913b322436c30ad2de49cd01d371657ae3fb55c7d；KV/actualD恢复0、READY、无排队只是收尾快照。正式库仍147runs/1957941samples/49profiles，新快数据只在两个私有库。首A前窗命令均值约.29428 A，后A约.30342..30647 A，不能删首A或唯一解释差异。</p>
+<p>来源：<code>data/position100-2to8-H48-timing-20260911/{analysis.md,results.json,十次对照指标.csv}</code>；<code>data/position100-2to8-H48-width-20260911/review/turn-audit.json</code>。</p>
+<h2 id="_1">反复未达目标的共性，以及证据允许的解释</h2>
+<ol>
+<li><strong>静态负载与接触条件会变。</strong> 同rawSP不保证同预压力、积分器状态或命令基线；夹具变更后旧终点/FF失配与回程慢收敛有证据关联。接触条件变化后先重新量化静态力—位移—电流，不照搬旧幅值。</li>
+<li><strong>“到端点”与“停稳”常被混同。</strong> x5更接近目标可以发生在更快回撤时；缩幅、减速、加KV有时主要削峰，尾补有时只是抬高终点。必须同时列峰、谷、v5、最大目标下欠量、固定目标RMS和后窗。</li>
+<li><strong>反馈/FF有真实取舍，未查明唯一动力学原因。</strong> 加KV可减回摆同时增命令噪声；FF时刻/宽度的局部扫描未必改善；有限模型辨识会被0.1 µm量化和A自身变化淹没。不能据一次对照宣称传感器、驱动、电压饱和或控制器算法为唯一原因。</li>
+<li><strong>力数据的新鲜度限制反复出现。</strong> 完整8k采集、无丢行、raw/CSV/SQL一致不等于独立8k力更新。假设2.5ms只改变单点评价口径，不能消除平台、验证真实延迟或自动保证持续窗。</li>
+<li><strong>保护结束不等于性能结论。</strong> FE/位置/速度/完成资格是不同首故障；启动前209和软件交接拒绝可为0运动，须逐条证据判定，不能按号码自动泛化。切电后的峰值不能回填为正常受控性能。旧失败和停止标记都应保留。</li>
+</ol>
+<h2 id="_2">可复现的下一轮原则</h2>
+<ol>
+<li>固定原始时钟、触发事件、采样相位、符号和窗口；单点/持续、共同目标/移动SP、峰谷/负速度面积分别定义。连续160拍是20ms；含两端100..300ms为1601点，半开为1600点，不能混用而不说明。</li>
+<li>先冻结主目标和选择规则。当前回摆优先；RMS与欠跟是代价报告，但回摆改善必须能区分削峰与抬谷，不能暗中更换目标使图看起来更好。</li>
+<li>同批冻结起点与接触条件、相邻A–B–A或A–B–A–C–A；快测中间不慢调。A全保留，模型训练、初筛和独立复测不重计。不能跨夹具/起点/日期做单变量因果宣称。</li>
+<li>请求、实际运动、COMPLETE、健康通过、新增行数各自记账；私有库不能加进正式总数，报告复用历史A不能算新运动。单个最低值、格点相同或三次台架结果不冒称生产可靠性。</li>
+<li>位置/速度改动须重建派生FF；核对全主程、保持、返回142段及原生/Python/token一致。基线+FF+余量只是规划包络，不能替代实际电流、力、FE、速度、返回与健康守护。</li>
+<li>用新鲜轴状态、raw/SP、原点、预压、静止、配置和健康证据准入；旧READY或网页按钮可用不是实时准入。临时KV必须作为完整组合记录并验证恢复0；只导入位置JSON不等于已设置KV。</li>
+<li>固定有限预算与停止规则；原停阶段不重开，不自动重发运动/Reset、Home、改原点。一旦需要另阶段处理软件问题或恢复，说明0运动证据和新冻结范围，保留失败原件，不能将一次有证据的无运动拒绝当通用重试许可。</li>
+<li>若要解释传感器或电流执行机理，另做同步与数据年龄已知的独立测量。现有证据足够指导有界对照，但不足以宣布唯一物理原因或全局极限。</li>
+</ol>
+<p>公共总结可以使用本表数字及结论边界；发布副本应显式选择图表与汇总，去除本地路径、部署/登录信息，勿直接复制整个data目录或原始数据库。</p><div class="footer">本页为已完成文档研究。新增逐拍增益与PFC式外环均未部署、未实测；日期明确的设备状态和参数不能代替下次现场准入。<br><a href="history.md">下载本页Markdown</a> · <a href="sources.html">查看来源索引</a></div></article></div></body></html>
