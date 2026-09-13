@@ -1,0 +1,87 @@
+{
+  "execution_enabled": false,
+  "queued_actions": 0,
+  "hardware_access": false,
+  "schema": "nyce.5ms.referenceTimingCandidates.v1",
+  "purpose": "Move trajectory progress earlier within the same5ms; spend more late time decelerating. Test actual endpoint plus recoil together; no predicted improvement claim.",
+  "time_map": "phi(u)=u+alpha*u^2*(1-u)^2 at interior sampled nodes; boundary nodes1,39,40 retain originalP/V to preserve the initial/finalHermite segments",
+  "unchanged": "5ms endpoint,28.7um,8to18N,allfeedbackandFFgains,19N/1A,native guards",
+  "inferred_physical_delay_compensation_claim": false,
+  "prioritization": "First inspect/model terminal response; choose one finite A/B/A. Neither candidate has been measured or dispatched.",
+  "profiles": {
+    "0.8": {
+      "profile_file": "reference-advance-0p8.json",
+      "profile_id": "95b693abe105495f0576edccecd3a7a6d3ce248e6c59fa1abd51093d08d3b25f",
+      "profile_file_sha256": "60c64966dc9709d03d0533b2360c4b09b3d438b7860028ff35a47feac3553411",
+      "motion_end_ms": 5,
+      "main_ticks": 40,
+      "tail_ticks": 60,
+      "source_time_advance_at_midpoint_ms": 0.25,
+      "continuous_time_map_min_derivative": 0.8460399282160997,
+      "all393_native_parsed_exact": true,
+      "native_full142_budget_a": 0.9608543041013993,
+      "python_full142_budget_a": 0.960854304101394,
+      "native_bounds": {
+        "min_position": -0.0287,
+        "max_position": 3.3189414815258665e-52,
+        "max_velocity": 11.349395100150677,
+        "max_acceleration": 8929.058462974343,
+        "max_jerk": 13458223.92213139,
+        "max_ff": 0.7278543041013992
+      },
+      "dense_points_per_segment": 10001,
+      "new_actual_tests": 0
+    },
+    "1.6": {
+      "profile_file": "reference-advance-1p6.json",
+      "profile_id": "fc49c52c0a288a3e8b2f4cedb26b03b6a72bb8e54074d8c51be84a71d681fa74",
+      "profile_file_sha256": "022d16c6138ccfcb20f22c68f8ea73b0c958036b56dce0a577181d768528fd61",
+      "motion_end_ms": 5,
+      "main_ticks": 40,
+      "tail_ticks": 60,
+      "source_time_advance_at_midpoint_ms": 0.5,
+      "continuous_time_map_min_derivative": 0.6920798564321996,
+      "all393_native_parsed_exact": true,
+      "native_full142_budget_a": 0.9608543041013993,
+      "python_full142_budget_a": 0.960854304101394,
+      "native_bounds": {
+        "min_position": -0.0287,
+        "max_position": 3.3189414815258665e-52,
+        "max_velocity": 12.679571699074671,
+        "max_acceleration": 11680.129919234394,
+        "max_jerk": 18613655.823139563,
+        "max_ff": 0.7278543041013992
+      },
+      "dense_points_per_segment": 10001,
+      "new_actual_tests": 0
+    }
+  },
+  "archived_source_sha256": [
+    {
+      "label": "generate.py",
+      "sha256": "87d5642af47a3119b18766d85f7cf32b7079046c7216a41b60af91fd3f463df1",
+      "availability": "保存在实验档案"
+    },
+    {
+      "label": "math_verify.py",
+      "sha256": "af9e2bbf748eef423860ba58d71c30dc6bec6024316fbdaea22a86995c96e35d",
+      "availability": "保存在实验档案"
+    },
+    {
+      "label": "segment-math.so",
+      "sha256": "54b76cc2ac9c9b03d1e1df7d2f0575ad28c3ae8e422a2c458644969143ffdf75",
+      "availability": "保存在实验档案"
+    },
+    {
+      "label": "A.json",
+      "sha256": "851e225b65e51691eddfdaf7d4772d70bae9c93916bb757be1b611bf5f38bf3f",
+      "availability": "保存在实验档案"
+    },
+    {
+      "label": "results.json",
+      "sha256": "2e9ea72138d9bacbf129683088cfd07c1bd67e11d2f7885eba49ec9353fd1be0",
+      "availability": "保存在实验档案"
+    }
+  ],
+  "publication_note": "两条候选仅经过离线验证，均未实测、未排队，未选为生产参数。公开副本省略原生派发参数串和本地绝对路径。profile_file为本目录中的候选JSON。条件电流预算不是实际闭环输出硬上界。"
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "nyce.public-report.manifest.v1",
+  "report": "position100-timescale-verified-20260913",
+  "published_files_sha256": {
+    "analysis.md": "ed27f6877cefe365296bfb43ab246ac659b1dd2c392eca3de393e1bb3ac57d73",
+    "index.html": "9e3073d9e904d31976583de634fd98c2692b46cc03e75a0f77070f61202cd56e",
+    "next5ms-design/proposed-design.json": "fb77b1dbcbdbf917b22e615e627263ce9d754eb2e89f4a438c0eb4649ca53322",
+    "next5ms-design/reference-advance-0p8.json": "60c64966dc9709d03d0533b2360c4b09b3d438b7860028ff35a47feac3553411",
+    "next5ms-design/reference-advance-1p6.json": "022d16c6138ccfcb20f22c68f8ea73b0c958036b56dce0a577181d768528fd61",
+    "plots/位置曲线.pdf": "200d510b9927444416218190a3d860cfd8db890b1ff31841deb7c44719c0127a",
+    "plots/位置曲线.png": "d845e46faf6d1e575151cecaaf7e32e2fdef487edc4d9ece37e20ac7b7f10854",
+    "plots/压力曲线.pdf": "0f9636d34073404320cd9895485e2ffe8224d6111118174372f157fc746a6616",
+    "plots/压力曲线.png": "5598d26687e601c5332caabf31db32ac56ea7c7c1f4cd52e4077c293896bc664",
+    "plots/电流曲线.pdf": "087265c9e52b046c09b0b867b997f16193bc5a98e6f4207290bc5842d45cfabe",
+    "plots/电流曲线.png": "18a8c4f378afcf5db2607913c5513ebfc99f4311d2e7863b5712b83df492f74d",
+    "plots/误差曲线.pdf": "58c87c8796759f55b2e9e49a05abeedfe7d3c3f4a9debe7621d341b1c0cfc68a",
+    "plots/误差曲线.png": "1e309630d67f4f3f7edabbc3dd9a6ac9aa9df8c710fb1381de984054f00e5511",
+    "plots/速度曲线.pdf": "a7deb5919ae8e35b0f8a9411f4f3b72c18d327ee59ca7a39c424dab022ed4146",
+    "plots/速度曲线.png": "d0d72a92169b44cbd22cfca4b6f3b0fca971228bfa4b282ca0c12aaa11defdf2",
+    "results.csv": "2c22d9b1de44077ed395c0e10d2f1071fa3fee06fae9a455b3a825d1260237f5",
+    "results.json": "c7265133ed0c24881bb51f8182b594666b08b5f4fb9e0e8b8d1cea7f158b8335"
+  },
+  "archived_original_documents_sha256": {
+    "report.html": "ffa29e08d68534a336d3908a1d80cbe687a9e833db19286a4d6c17854bf0c705",
+    "analysis.md": "4185ca9a6bf5de170e548c8a7693bbed6fa6bfd0673bd2d645061857625b2600",
+    "results.json": "2e9ea72138d9bacbf129683088cfd07c1bd67e11d2f7885eba49ec9353fd1be0",
+    "next5ms-design/proposed-design.json": "198d2c3f27fa893dc454f7303b3e4541554301be03c2588677d9d5c5803ed761"
+  },
+  "note": "文件清单不包含自身。CSV、五类PNG/PDF和两条未实测候选JSON与原档案逐字节一致。HTML增加站点导航与手机适配；文字和JSON公开副本省略本地路径、派发参数串并标注档案来源，指标数值未改。"
+}
