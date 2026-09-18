@@ -1,0 +1,347 @@
+{
+  "title": "本次聊天过程公开复盘证据索引",
+  "prepared_date": "2026-09-18",
+  "scope": "selected summary, not full raw archive or chat transcript",
+  "raw_archive_public": false,
+  "new_hardware_operations_for_publication": 0,
+  "stage_notes": {
+    "AK": "Complete within-group A0/B/A1; P excluded; retained candidate, still short at7ms; current diagnostics not all pass",
+    "AL": "Only A0/B formal records; P excluded; A1 pre-motion force-band rejection; no new retention, no complete ABA"
+  },
+  "figures": {
+    "assets/ak-five-curves.png": {
+      "stage": "AK",
+      "source_file": "analysis/five-curves.png",
+      "sha256": "2e0b051b2dea20b37ec8be4104951a6c5880fb87bc1617ad792b3aaa12689f0b"
+    },
+    "assets/ak-rebound-detail.png": {
+      "stage": "AK",
+      "source_file": "analysis/rebound-detail.png",
+      "sha256": "d6a28b54fd1a570b8a333750cd1206ab2d1117b49fa094d37a9a105c90e193d4"
+    },
+    "assets/al-five-curves.png": {
+      "stage": "AL",
+      "source_file": "analysis/five-curves.png",
+      "sha256": "93365128e8a8aeacb4bfce844788368667808d98b52852ecf12fad48dab7dfc2"
+    },
+    "assets/al-rebound-detail.png": {
+      "stage": "AL",
+      "source_file": "analysis/rebound-detail.png",
+      "sha256": "3a453796be32e32e8e698f5ab16e50ef6d09e306360f4523a8ab9b3603128431"
+    },
+    "assets/al-local-response.png": {
+      "stage": "AL",
+      "source_file": "analysis/local-response.png",
+      "sha256": "d6601d0e4f58b56203618981e645c6b64e03f99797e6423bda89c72577d0d133"
+    },
+    "assets/al-match-rejection.png": {
+      "stage": "AL",
+      "source_file": "analysis/match-rejection.png",
+      "sha256": "ba007c84c49f298daa14769d35ee5b440593ae7bfa5a64837548cb7641c519ec"
+    }
+  },
+  "stages": {
+    "AK": {
+      "archive_stage": "b7-terminal-support-resetstart-paba-20260918",
+      "records": [
+        {
+          "stage": "AK",
+          "role": "A0",
+          "reference_end_ms": 7,
+          "target_um": 28.7,
+          "x7_um": 27.4,
+          "shortfall7_um": 1.3,
+          "first_peak_um": 27.4,
+          "first_valley_um": 26.8,
+          "rebound_um": 0.6,
+          "first_quantized_target_crossing_ms": 30.5,
+          "complete_ABA": true,
+          "first_crossing_is_settling_time": false
+        },
+        {
+          "stage": "AK",
+          "role": "B",
+          "reference_end_ms": 7,
+          "target_um": 28.7,
+          "x7_um": 27.7,
+          "shortfall7_um": 1.0,
+          "first_peak_um": 27.7,
+          "first_valley_um": 27.1,
+          "rebound_um": 0.6,
+          "first_quantized_target_crossing_ms": 30.75,
+          "complete_ABA": true,
+          "first_crossing_is_settling_time": false
+        },
+        {
+          "stage": "AK",
+          "role": "A1",
+          "reference_end_ms": 7,
+          "target_um": 28.7,
+          "x7_um": 27.4,
+          "shortfall7_um": 1.3,
+          "first_peak_um": 27.4,
+          "first_valley_um": 26.8,
+          "rebound_um": 0.6,
+          "first_quantized_target_crossing_ms": 31.125,
+          "complete_ABA": true,
+          "first_crossing_is_settling_time": false
+        }
+      ],
+      "local_archive_source_sha256": {
+        "REPORT.md": "23fd5fe4c71dd874b44938618a903526597d0e8b4124555e254c8fa19de42943",
+        "analysis/summary.json": "1ccdeed28d13d57c06b5e963937e25a61560f21f3dc51fb0fcc89ec87b0802e3",
+        "analysis/arrival.json": "f0fa123a739af6af136ea6b51765c837d8e83cbf1b68f6eaa6c13cabdd71cf9b",
+        "review/result-independent-review.md": "ff59121a89c03a2515255478fc33e5dad54655b8382fed570b39345704183762",
+        "PLAN.json": "7d781d2aa4eb2612b85110a4ba9ecfd41497ba8ba8c72e7f836d77fe9c08bd88"
+      },
+      "source_files_access": "Local experimental archive; not online links"
+    },
+    "AL": {
+      "archive_stage": "b7-terminal-support-advance05-paba-20260918",
+      "records": [
+        {
+          "stage": "AL",
+          "role": "A0",
+          "reference_end_ms": 7,
+          "target_um": 28.7,
+          "x7_um": 27.6,
+          "shortfall7_um": 1.1,
+          "first_peak_um": 27.6,
+          "first_valley_um": 27.0,
+          "rebound_um": 0.6,
+          "first_quantized_target_crossing_ms": 32.5,
+          "complete_ABA": false,
+          "first_crossing_is_settling_time": false
+        },
+        {
+          "stage": "AL",
+          "role": "B",
+          "reference_end_ms": 7,
+          "target_um": 28.7,
+          "x7_um": 27.9,
+          "shortfall7_um": 0.8,
+          "first_peak_um": 27.9,
+          "first_valley_um": 27.0,
+          "rebound_um": 0.9,
+          "first_quantized_target_crossing_ms": 37.375,
+          "complete_ABA": false,
+          "first_crossing_is_settling_time": false
+        }
+      ],
+      "local_archive_source_sha256": {
+        "REPORT.md": "1e4fde143e77068aa355bba883ec61c34422619d6fa000348a51904a6db61664",
+        "analysis/summary.json": "3702388b03c69e0fbb8a6525530783f1da5ad9976d610cb9b686b71ca35899e7",
+        "analysis/arrival.json": "6af999c74b2dd8ab1241f523c8e5e52f98eb9ea0002539ae1d2a8513e2bb0409",
+        "review/result-independent-review.md": "90870fe8435e9efa0716b4d61bfccc71526d1c810bd9afe59a38c1647c917faf",
+        "PLAN.json": "bf2e4b093bb00afd2af9db5bc1471889a1dcd6493aff52ad2137f95deec3094e"
+      },
+      "source_files_access": "Local experimental archive; not online links"
+    }
+  },
+  "historical_source_index": [
+    {
+      "archive_stage": "accel-capacity-20260916",
+      "source_file": "README.md",
+      "sha256": "ce7ca6ed69f3c689d69d32350b4168fa55af67373080177bb3852ad0b5670829",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "accel-ff20-20260916",
+      "source_file": "README.md",
+      "sha256": "fb91e0d763113bfe5392a7838c6fc083077b52d76e5883ef07c643cce2cf04c9",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "accel-ff40q-20260916",
+      "source_file": "README.md",
+      "sha256": "9342f3b20eff04dac0223e7153b92be4f965819e9996d3fdb152a4c2f6d434c4",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-40ma-power-settled-aba-20260915",
+      "source_file": "README.md",
+      "sha256": "3c3726f8f6761c070c34e28d8a3c0dc35fed16bbff6b87941cecbccbe9f7c950",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-front10-paba-20260917",
+      "source_file": "REPORT.md",
+      "sha256": "d9c4d088bf08951e6d9ff54d2cbe0621fe941d8260437db44e625b896285acb7",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-front5-paba-20260917",
+      "source_file": "REPORT.md",
+      "sha256": "b2a699defcedbad6efa5a30bf010fca76ff79a40aa4052f7649395b97e96c9a5",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-progress-deferred-ack-paba-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "5165fe334d0970ecfd0ae978ab56bb2377e36541d7e1ba4b185cef8d5c1cdece",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-progress-deferred-ack-resume-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "9dfeb11b09e606d88196de0dc1f1dd4c515dcacdeac006fe4c94c7f94333f939",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-progress-late-exit-paba-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "2c17b2d433be793c1ab2855c99725501097cc635e6748f00d601234bbb9e3152",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-progress-shape-repeat-20260917",
+      "source_file": "REPORT.md",
+      "sha256": "2ddcec9dd91e45dddf45fff1c216d6afc1203f8ced0bf26f675c852fbc9bf524",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-stepwise-after-b8-20260915",
+      "source_file": "README.md",
+      "sha256": "2ffacce5a04467d2d2802103f06c92662cc1aeb56f79d7603a316b6d2e337c08",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-tail-ff-20ma-centered-aba-20260915",
+      "source_file": "README.md",
+      "sha256": "b69b96d6dcc405e0f2169367b2e922e71a23e668f9207dacb1fba8390fccc7be",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-tail-ff-30ma-position-first-20260915",
+      "source_file": "README.md",
+      "sha256": "ca11919ba1afae47829bab18ab6c878db51de857086a1c72b886addc2ef18eb1",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-tail30-hold1-paba-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "d7cec6e11415c95060c01f9542b45a9736c211a7531e7b18703b69bab6f067fe",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-tail30-shift05-paba-20260917",
+      "source_file": "REPORT.md",
+      "sha256": "017f0112ed731649cd2b89b08d2efc5f81e02a02df8a19dc82fb4d92711930e2",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-tail30-shift075-paba-20260917",
+      "source_file": "REPORT.md",
+      "sha256": "9ee2444bc9fd189ae5fce58c381e05bd6fe66ab7e31d3cdb691fa94c83f61312",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-tail35-shift075-continue-20260917",
+      "source_file": "REPORT.md",
+      "sha256": "fa06353332344a2cedf263b8760fe5ebcb90c255a2a2ed89a53ecfe24323afa1",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-taildelta-early25-half-confirm-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "2a73c8a553c59b66ab4125fe295ab14b7ed57914f9ac8b92dcf3d7656c26cdc7",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-taildelta-early25-half-finish-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "f025e2d38415ec95b1378ef2fea994f8eae1fecb4f5bb848e78894195b3bd12f",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-taildelta-early25-scale60-paba-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "bcd01c498a30228180dd56273b74e647c1fd5c59ab566199c855962621b888ce",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-taildelta-half-vs60-paba-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "79fdddb9dcdaf5857a2b6ba2494840f30381c57c6e55e1e374e44b4c35d3ce3a",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-terminal-support-advance05-paba-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "1e4fde143e77068aa355bba883ec61c34422619d6fa000348a51904a6db61664",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "b7-terminal-support-resetstart-paba-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "23fd5fe4c71dd874b44938618a903526597d0e8b4124555e254c8fa19de42943",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "endpoint-priority-20260918",
+      "source_file": "PRIORITY.md",
+      "sha256": "cbef5bb8172c69fe49d5674be53d9b2f060c07b0caa9f678b77925a41b2e1172",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "endpoint-priority-20260918",
+      "source_file": "timing-position-evidence.json",
+      "sha256": "f7e36ec1fa536eb373d643000b97339985f719fe3a7c3e928f51fa008a372e78",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "native-loop-learning-route-20260916",
+      "source_file": "CONTROL-ROUTE.md",
+      "sha256": "8e3df5ef42d5acfffd517914ec135701d59976426b99e4b02f603c0cd7d65ae4",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "preonly-ack-deferred-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "704250f3db006d62828fa27ded338778338dc64d431c9e73d74f6d4e6f6bea6e",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "preonly-ack-deferred-repeat-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "9f1edd4f4e91bfcf4a88f47427e2e11fba5ab237606e87a1acc953c51bbfbe1b",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "preonly-ack-journal-probe-20260918",
+      "source_file": "REPORT.md",
+      "sha256": "6a953a5c943893d72d0b697db21b4f15c32d22ef14ce8515351a5cdc4b7c2c61",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "user40-30um-readiness-20260916",
+      "source_file": "README.md",
+      "sha256": "ba43c7c022c6a7f960442f5bb23dd3beaed23efb281961d10b51118131c33d8e",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "user40-plain-once-20260916",
+      "source_file": "README.md",
+      "sha256": "67caa0c78e9a75a5f57f130d0e3742316aa1807ce8e6ec936cb59d4e41cd95f0",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "user40-simple-once-20260916",
+      "source_file": "README.md",
+      "sha256": "c3216bc625c343cbd5f3826721d2967760d017d9a1cef524b16416344cb1fbb7",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "velocity8-brake40-once-20260916",
+      "source_file": "README.md",
+      "sha256": "28ee3ea2e2d961dd7a26396e8a94f3be6fa1be6da3b3d5c1976c0227631cc842",
+      "access": "retained in local experimental archive, not a public link"
+    },
+    {
+      "archive_stage": "velocity8-execution-path-audit-20260916",
+      "source_file": "README.md",
+      "sha256": "37f33202424963b543bf0afec36582088dbfa167a9b6783b69ba7fa484bbaeca",
+      "access": "retained in local experimental archive, not a public link"
+    }
+  ]
+}

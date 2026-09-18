@@ -1,0 +1,6 @@
+﻿stage,role,reference_end_ms,target_um,x7_um,shortfall7_um,first_peak_um,first_valley_um,rebound_um,first_quantized_target_crossing_ms,complete_ABA,first_crossing_is_settling_time
+AK,A0,7,28.7,27.4,1.3,27.4,26.8,0.6,30.5,True,False
+AK,B,7,28.7,27.7,1.0,27.7,27.1,0.6,30.75,True,False
+AK,A1,7,28.7,27.4,1.3,27.4,26.8,0.6,31.125,True,False
+AL,A0,7,28.7,27.6,1.1,27.6,27.0,0.6,32.5,False,False
+AL,B,7,28.7,27.9,0.8,27.9,27.0,0.9,37.375,False,False
